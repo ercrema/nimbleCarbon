@@ -1,0 +1,12 @@
+Package: nimbleCarbon
+Title: Models and Utility Functions for the Analysis of Radiocarbon Dates with 'nimble'
+Version: 0.1.0
+Authors@R: c(person("Enrico","Crema",role=c("aut","cre"),email=c("enrico.crema@gmail.com"),comment=c(ORCID="0000-0001-6727-5138")))
+Description: To be written 
+Depends: R (>= 3.5.0), nimble
+Suggests: spelling, rmarkdown, knitr, testthat (>= 2.1.0)
+License: GPL (>= 2)
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 7.1.1
+Language: en-GB
