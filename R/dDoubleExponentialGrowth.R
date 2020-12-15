@@ -40,7 +40,7 @@ dDoubleExponentialGrowth=nimbleFunction(
     returnType(double(0))
     t1 = 1:(abs(mu-a))
     t2 = 1:(abs(b-mu)+1)
-    n = c(nt0*(1+r1)^c(t1),(nt0*(1+r1)^abs(mu-a))*(1+r2)^t2)
+    n = c((1+r1)^c(t1),((1+r1)^abs(mu-a))*(1+r2)^t2)
     p = n/sum(n)
     # This last bit would be the same for any model
     logProb = dcat(a-x,prob=p,log=TRUE)
@@ -58,7 +58,7 @@ rDoubleExponentialGrowth = nimbleFunction(
     returnType(double(0))
     t1 = 1:(abs(mu-a))
     t2 = 1:(abs(b-mu)+1)
-    pop = c(nt0*(1+r1)^c(t1),(nt0*(1+r1)^abs(mu-a))*(1+r2)^t2)
+    pop = c((1+r1)^c(t1),((1+r1)^abs(mu-a))*(1+r2)^t2)
     p = pop/sum(pop)
     res=a-rcat(n=1,prob=p)+1
     return(res)
