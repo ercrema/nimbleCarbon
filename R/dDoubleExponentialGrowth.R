@@ -35,12 +35,25 @@ NULL
 # abline(v=mu,lty=2)
 # all.equal(n/sum(n),n1/sum(n1))
 
+#dDoubleExponentialGrowth(2000,a=3400,b=1850,r1=0.01,r2=0.003,mu=2000,log=TRUE)
+
+
 dDoubleExponentialGrowth=nimbleFunction(
-  run = function(x = integer(0),a=double(0),b=double(0),r1=double(0),r2=double(0),mu=integer(0), log = integer(0)) {
+  run = function(x = integer(0),a=double(0),b=double(0),r1=double(0),r2=double(0),mu=double(0), log = integer(0)) {
     returnType(double(0))
     t1 = 1:(abs(mu-a))
     t2 = 1:(abs(b-mu)+1)
-    n = c((1+r1)^c(t1),((1+r1)^abs(mu-a))*(1+r2)^t2)
+    n1 = numeric(abs(mu-a))
+    n2 = numeric(abs(b-mu))
+    for (i in 1:abs(mu-a))
+    {
+      n1[i] = (1+r1)^t1[i]
+    }
+    for (i in 1:abs(b-mu))
+    {
+      n2[i] = ((1+r1)^abs(mu-a))  * (1+r2)^t2[i]
+    }
+    n = c(n1,n2)
     p = n/sum(n)
     # This last bit would be the same for any model
     logProb = dcat(a-x,prob=p,log=TRUE)
@@ -54,11 +67,21 @@ dDoubleExponentialGrowth=nimbleFunction(
 #' @rdname dDoubleExponentialGrowth
 #' @export
 rDoubleExponentialGrowth = nimbleFunction(
-  run = function(n=integer(0),a=double(0),b=double(0),r1=double(0),r2=double(0),mu=integer(0)) {
+  run = function(n=integer(0),a=double(0),b=double(0),r1=double(0),r2=double(0),mu=double(0)) {
     returnType(double(0))
     t1 = 1:(abs(mu-a))
     t2 = 1:(abs(b-mu)+1)
-    pop = c((1+r1)^c(t1),((1+r1)^abs(mu-a))*(1+r2)^t2)
+    pop1 = numeric(abs(mu-a))
+    pop2 = numeric(abs(b-mu))
+    for (i in 1:abs(mu-a))
+    {
+      pop1[i] = (1+r1)^t1[i]
+    }
+    for (i in 1:abs(b-mu))
+    {
+      pop2[i] = ((1+r1)^abs(mu-a))  * (1+r2)^t2[i]
+    }
+    pop = c(pop1,pop2)
     p = pop/sum(pop)
     res=a-rcat(n=1,prob=p)+1
     return(res)

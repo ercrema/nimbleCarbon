@@ -20,7 +20,11 @@ dExponentialGrowth=nimbleFunction(
   run = function(x = integer(0),a=double(0),b=double(0),r=double(0), log = integer(0)) {
     returnType(double(0))
     t = 1:(abs(b-a)+1)
-    n = (1+r)^t
+    n = numeric(abs(b-a))
+    for (i in 1:abs(b-a))
+    {
+      n[i] = (1+r)^t[i]
+    }
     p = n/sum(n)
     # This last bit would be the same for any model
     logProb = dcat(a-x,prob=p,log=TRUE)
@@ -37,7 +41,11 @@ rExponentialGrowth = nimbleFunction(
   run = function(n=integer(0),a=double(0),b=double(0),r=double(0)) {
     returnType(double(0))
     t = 1:(abs(b-a)+1)
-    pop = (1+r)^t
+    pop = numeric(abs(b-a))
+    for (i in 1:abs(b-a))
+    {
+      pop[i] = (1+r)^t[i]
+    }
     p = pop/sum(pop)
     res=a-rcat(n=1,prob=p)+1
     return(res)
