@@ -25,7 +25,7 @@ dLogisticGrowth=nimbleFunction(
     n = 1/(1+((1-k)/k)*exp(-r*t))
     p = n/sum(n)
     # This last bit would be the same for any model
-    logProb = dcat(a-x,prob=p,log=TRUE)
+    logProb = dcat(a-x+1,prob=p,log=TRUE)
     if(log) {
       return(logProb)
     } else {

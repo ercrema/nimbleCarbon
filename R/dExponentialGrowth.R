@@ -21,13 +21,13 @@ dExponentialGrowth=nimbleFunction(
     returnType(double(0))
     t = 1:(abs(b-a)+1)
     n = numeric(abs(b-a))
-    for (i in 1:abs(b-a))
+    for (i in 1:c(abs(b-a)+1))
     {
       n[i] = (1+r)^t[i]
     }
     p = n/sum(n)
     # This last bit would be the same for any model
-    logProb = dcat(a-x,prob=p,log=TRUE)
+    logProb = dcat(a-x+1,prob=p,log=TRUE)
     if(log) {
       return(logProb)
     } else {
@@ -42,7 +42,7 @@ rExponentialGrowth = nimbleFunction(
     returnType(double(0))
     t = 1:(abs(b-a)+1)
     pop = numeric(abs(b-a))
-    for (i in 1:abs(b-a))
+    for (i in 1:c(abs(b-a)+1))
     {
       pop[i] = (1+r)^t[i]
     }
