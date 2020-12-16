@@ -43,13 +43,15 @@ dDoubleExponentialGrowth=nimbleFunction(
     mu = round(mu)
     t1 = 1:(abs(mu-a))
     t2 = 1:(abs(b-mu)+1)
+    t1final = abs(mu-a)
+    t2final = abs(b-mu)+1
     n1 = numeric(abs(mu-a))
     n2 = numeric(abs(b-mu)+1)
-    for (i in 1:abs(mu-a))
+    for (i in 1:t1final)
     {
       n1[i] = (1+r1)^t1[i]
     }
-    for (i in 1:c(abs(b-mu)+1))
+    for (i in 1:t2final)
     {
       n2[i] = ((1+r1)^abs(mu-a))  * (1+r2)^t2[i]
     }
@@ -72,13 +74,15 @@ rDoubleExponentialGrowth = nimbleFunction(
     mu = round(mu)
     t1 = 1:(abs(mu-a))
     t2 = 1:(abs(b-mu)+1)
+    t1final = abs(mu-a)
+    t2final = abs(b-mu)+1
     pop1 = numeric(abs(mu-a))
     pop2 = numeric(abs(b-mu)+1)
-    for (i in 1:abs(mu-a))
+    for (i in 1:t1final)
     {
       pop1[i] = (1+r1)^t1[i]
     }
-    for (i in 1:c(abs(b-mu)+1))
+    for (i in 1:t2final)
     {
       pop2[i] = ((1+r1)^abs(mu-a))  * (1+r2)^t2[i]
     }

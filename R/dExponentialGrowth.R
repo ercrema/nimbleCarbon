@@ -21,7 +21,8 @@ dExponentialGrowth=nimbleFunction(
     returnType(double(0))
     t = 1:(abs(b-a)+1)
     n = numeric(abs(b-a))
-    for (i in 1:c(abs(b-a)+1))
+    tfinal = abs(b-a)+1
+    for (i in 1:tfinal)
     {
       n[i] = (1+r)^t[i]
     }
@@ -42,7 +43,8 @@ rExponentialGrowth = nimbleFunction(
     returnType(double(0))
     t = 1:(abs(b-a)+1)
     pop = numeric(abs(b-a))
-    for (i in 1:c(abs(b-a)+1))
+    tfinal = abs(b-a)+1
+    for (i in 1:tfinal)
     {
       pop[i] = (1+r)^t[i]
     }
