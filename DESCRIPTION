@@ -3,8 +3,9 @@ Title: Models and Utility Functions for the Analysis of Radiocarbon Dates with '
 Version: 0.1.0
 Authors@R: c(person("Enrico","Crema",role=c("aut","cre"),email=c("enrico.crema@gmail.com"),comment=c(ORCID="0000-0001-6727-5138")))
 Description: To be written 
-Depends: R (>= 3.5.0), nimble, rcarbon, coda
+Depends: R (>= 3.5.0), nimble, rcarbon
 Suggests: spelling, rmarkdown, knitr, testthat (>= 2.1.0)
+Imports: graphics,grDevices,utils,snow,doSNOW,foreach,iterators,knitr,coda
 License: GPL (>= 2)
 Encoding: UTF-8
 LazyData: true
