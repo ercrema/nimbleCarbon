@@ -25,7 +25,7 @@ postHPDplot = function(x,prob=0.9,bw='SJ',hpd.col='lightblue',line.col='darkgrey
   plot(dens$x,dens$y,type='n',...)
   hpdi.x = dens$x[which(dens$x>=x.lo&dens$x<=x.hi)]
   hpdi.y = dens$y[which(dens$x>=x.lo&dens$x<=x.hi)]
-  if (show.hpd.plot){polygon(x=c(hpdi.x,rev(hpdi.x)),y=c(hpdi.y,rep(0,length(hpdi.y))),border=NA,col=hpd.col)}
+  if (HPD){polygon(x=c(hpdi.x,rev(hpdi.x)),y=c(hpdi.y,rep(0,length(hpdi.y))),border=NA,col=hpd.col)}
   lines(dens,col=line.col)
   if (show.hpd.val){title(sub=paste0(prob*100,'%HPDI:',round(x.lo,rnd),'~',round(x.hi,rnd)))}
 }
