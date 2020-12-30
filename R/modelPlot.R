@@ -8,8 +8,9 @@
 #' @param type Either a 'spaghetti' plot or a quantile based envelope plot. Default is 'spaghetti'.
 #' @param nsample Number of samples to be used. Default is the length of the parameter vectors supplied in the argument \code{params}.
 #' @param interval Quantile interval used for the envelope plot. Ignored when type is set to 'spaghetti'.
-#' @param alpha Transparency value for each line in the spaghetti plot. Ignored when type is set to 'envelope'.
 #' @param calendar  Either \code{'BP'} or \code{'BCAD'}. Indicate whether the calibrated date should be displayed in BP or BC/AD. Default is  \code{'BP'}.
+#' @param alpha Transparency value for each line in the spaghetti plot. Ignored when type is set to 'envelope'.
+#' @param ylim the y limits of the plot.
 #' @param ... Additional arguments affecting the plot
 #' @examples
 #' params = list(k=runif(100,0.01,0.02),r=runif(100,0.003,0.004))
@@ -20,7 +21,7 @@
 #' @import utils
 #' @import rcarbon
 #' @export 
-modelPlot = function(model,a,b,params,type=c('spaghetti'),nsample=NULL,interval=0.9,calendar='BP',alpha=0.1,...)
+modelPlot = function(model,a,b,params,type=c('spaghetti'),nsample=NULL,interval=0.9,calendar='BP',alpha=0.1,ylim=NULL,...)
 {
   #Check length parameters
   if (length(unique(unlist(lapply(params,length))))>1)
@@ -59,7 +60,7 @@ modelPlot = function(model,a,b,params,type=c('spaghetti'),nsample=NULL,interval=
     lo=apply(mat,1,quantile,prob=0+(1-0.9)/2)
     hi=apply(mat,1,quantile,prob=1-(1-0.9)/2)
     median = apply(mat,1,median)
-    ylim=c(0,max(hi))
+    if (is.null(ylim)){ylim=c(0,max(hi))}
     plot(plotyears, median, xlim=xlim, ylim=ylim, type="n", col="white", ylab='Probability', xlab=xlabel, xaxt="n",...)
     polygon(c(plotyears,rev(plotyears)),c(lo,rev(hi)),col='lightgrey',border=NA)
     lines(plotyears, median,lwd=2)
@@ -67,7 +68,7 @@ modelPlot = function(model,a,b,params,type=c('spaghetti'),nsample=NULL,interval=
   
   if (type=='spaghetti')
   {
-    ylim=c(0,max(mat))
+    if (is.null(ylim)){ylim=c(0,max(mat))}
     plot(0, 0, xlim=xlim, ylim=ylim, type="n", col="white", ylab='Probability', xlab=xlabel, xaxt="n",...)
     apply(mat,2,lines,x=plotyears,col=rgb(0,0,0,alpha))
   }

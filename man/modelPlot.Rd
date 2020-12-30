@@ -14,6 +14,7 @@ modelPlot(
   interval = 0.9,
   calendar = "BP",
   alpha = 0.1,
+  ylim = NULL,
   ...
 )
 }
@@ -35,6 +36,8 @@ modelPlot(
 \item{calendar}{Either \code{'BP'} or \code{'BCAD'}. Indicate whether the calibrated date should be displayed in BP or BC/AD. Default is  \code{'BP'}.}
 
 \item{alpha}{Transparency value for each line in the spaghetti plot. Ignored when type is set to 'envelope'.}
+
+\item{ylim}{the y limits of the plot.}
 
 \item{...}{Additional arguments affecting the plot}
 }
