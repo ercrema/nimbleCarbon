@@ -57,8 +57,8 @@ modelPlot = function(model,a,b,params,type=c('spaghetti'),nsample=NULL,interval=
   
   if (type=='envelope')
   {
-    lo=apply(mat,1,quantile,prob=0+(1-0.9)/2)
-    hi=apply(mat,1,quantile,prob=1-(1-0.9)/2)
+    lo=apply(mat,1,quantile,prob=0+(1-interval)/2)
+    hi=apply(mat,1,quantile,prob=1-(1-interval)/2)
     median = apply(mat,1,median)
     if (is.null(ylim)){ylim=c(0,max(hi))}
     plot(plotyears, median, xlim=xlim, ylim=ylim, type="n", col="white", ylab='Probability', xlab=xlabel, xaxt="n",...)
