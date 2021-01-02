@@ -55,7 +55,8 @@ postPredSPD = function(x,errors,calCurve,model,a,b,params,nsim,method='uncalsamp
   
   # General Settings ####
   #randomly sample nsim parameter values
-  params = lapply(params,sample,size=nsim)
+  index = sample(nsim,size=nsim)
+  params = lapply(params,function(x,i){x[i]},i=index)
   ndates = length(x)
   calBP = a:b
   
