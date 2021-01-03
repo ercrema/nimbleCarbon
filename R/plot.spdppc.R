@@ -129,7 +129,7 @@ plot.spdppc = function(x, type='envelope', nsample=NULL, interval=0.90, obs.lwd=
         polygon(c(bbb,rev(bbb)),c(x$obs$PrDens[index],rev(lo[index])),border=NA,col=negative.col)
       }  
     }
-    lines(plotyears,x$obs$PrDens,lwd=1)
+    lines(plotyears,x$obs$PrDens,lwd=obs.lwd,col=obs.col)
   } 
   
   if (type=='spaghetti')
