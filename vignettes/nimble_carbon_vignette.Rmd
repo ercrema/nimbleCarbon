@@ -15,7 +15,7 @@ vignette: >
 ---
 
 
-```{r, include = FALSE}
+```{r general setup, include = FALSE}
 h = 3.5
 w = 3.5
 is_check <- ("CheckExEnv" %in% search()) || any(c("_R_CHECK_TIMINGS_",
@@ -31,20 +31,20 @@ The _nimbleCarbon_ package provides a suite of bespoke functions and statistical
 
 The _nimbleCarbon_ package is still experimental and can be installed only via GitHub using the [devtools](https://cran.r-project.org/package=devtools) package:
 
-```{r,eval=FALSE}
+```{r installing nimbleCarbon,eval=FALSE}
 library(devtools)
 install_github('ercrema/nimbleCarbon',auth_token='58fd474f4001e364c30a642e5013972e5a2fb7ae')
 ```
 
 Once the installation is completed the package can be loaded using the `library()` command:
 
-```{r}
+```{r loading nimbleCarbon}
 library(nimbleCarbon)
 ```
 
 This vignette will also use some handy functions from the [rcarbon](https://cran.r-project.org/package=rcarbon) package:
 
-```{r}
+```{r loading rcarbon}
 library(rcarbon)
 ```
 
@@ -62,7 +62,7 @@ because $N_0$ is a constant and does not affect the estimate of $\pi_t$, we can 
 $$ \pi_{a-t} =  \frac{(1+r)^t}{\sum_{t=0}^{a-b}(1+r)^t}$$
 where $a$ and $b$ are the calendar years defining the start and the end of the time window of analysis. Thus, for example, if we set $a=6000$, $b=4000$ and $r=0.001$ we can obtain a vector of probabilities as follows:
 
-```{r}
+```{r exponential model,fig.width=5.5,fig.height=5}
 a = 6500
 b = 4500
 r = 0.001
@@ -73,7 +73,7 @@ plot(a:b,pi,xlim=c(a,b),type='l',xlab='Cal BP',ylab='Probability Mass',ylim=c(0,
 
 We can use the vector `pi` to generate sample calendar dates. For example, let's consider a hypothetical dataset consisting of 300 radiocarbon dates:
 
-```{r}
+```{r generate samples from exponential model}
 set.seed(123)
 n = 300
 calendar.dates = sample(a:b,size=n,prob=pi)
@@ -85,7 +85,7 @@ Typically, these calendar dates are calibrated, and their probabilities aggregat
 
 In order to carry out a Bayesian analysis of out data using Nimble we need to first define a BUGS model using the `nimbleCode()` function in Nimble:
 
-```{r}
+```{r exponential nimbleCode}
 model <- nimbleCode({
       for (i in 1:N){
         # Growth Model Likelihood
@@ -105,20 +105,20 @@ The syntax of the BUGS model typically include three main elements. The first on
 
 Next we define our constants and the data to be fitted. The constants would include the sample size, the values associated with the calibration curve, and any other fixed parameters (in this case `start` and `end`):
 
-```{r}
+```{r constraints ex1}
 data("intcal20") #load the IntCal20 calibration curve
 constants <- list(N=n,calBP=intcal20$CalBP,C14BP=intcal20$C14Age,C14err=intcal20$C14Age.sigma,start=a,end=b)
 ```
 
 We then define our input data:
 
-```{r}
+```{r data ex1}
 data <- list(X=cra,sigma=cra.error)
 ```
 
 We are now ready to compile and run our model. The nimble package offer different options and degrees of customisation. The quickest approach consist of using the `nimbleMCMC()` function, which requires various MCMC parameters such as the number of chains and iterations and some sensible initial values. Initial values can be fixed:
 
-```{r}
+```{r ini ex1}
 m.dates = medCal(calibrate(cra,cra.error,verbose = FALSE))
 if(any(m.dates>a|m.dates<b)){m.dates[m.dates>a]=a;m.dates[m.dates<b]=b} #ensure that theta is within the time range of analysis
 inits <- list(r=0.0004,theta=m.dates)
@@ -126,46 +126,226 @@ inits <- list(r=0.0004,theta=m.dates)
 
 or alternatively when running multiple chains can be defined as series of functions or a mixture of functions and fixed values:
 
-```{r}
+```{r ini function ex1}
 inits.function = function() list(r=rexp(1,1/0.0004),theta=m.dates)
 ```
 
 The example below consists of 10,000 iterations over 2 chains with a burn-in of 2000 steps (please note this can take about 20 minutes) :
 
-```{r}
-mcmc.samples<- nimbleMCMC(code = model,constants = constants,data = data,niter = 10000, nchains = 2, thin=1, nburnin = 2000, progressBar = FALSE, monitors=c('r','theta'), inits=inits.function, samplesAsCodaMCMC=TRUE)
+```{r mcmc samples ex1,results='hide'}
+mcmc.samples<- nimbleMCMC(code = model,constants = constants,data = data,niter = 10000, nchains = 2, thin=1, nburnin = 2000, progressBar = FALSE, monitors=c('r','theta'), inits=inits.function, samplesAsCodaMCMC=TRUE,setSeed=c(123,456))
 ```
 
+## Diagnostics and Posterior Distributions
 
-## MCMC Diagnostics and Posterior Distribution
+The argument `samplesAsCodaMCMC` in `nimbleMCMC()` ensures that the output is stored as a `mcmc` class object of the [coda](https://cran.r-project.org/package=coda) package, which offers a wide range of MCMC diagnostics. First, trace plots of the posterior samples can be plotted using the standard `plot()` function in R as shown in the example below:
 
-```{r}
+```{r trace plot ex1, fig.height=6.5,fig.width=5.5}
 par(mfrow=c(2,1))
 plot(as.numeric(mcmc.samples$chain1[,'r']),type='l',xlab='MCMC Iteration',ylab='r',main='chain 1')
 plot(as.numeric(mcmc.samples$chain2[,'r']),type='l',xlab='MCMC Iteration',ylab='r',main='chain 2')
 ```
 
-```{r}
+If more than two chains are available, diagnostic metrics such as Gelman-Rubin convergence diagnostic and MCMC effective sample sizes can be evaluated:
+
+```{r diagnostic ex1}
+library(coda)
 rhat = gelman.diag(mcmc.samples)
 head(rhat$psrf)
 ess = effectiveSize(mcmc.samples)
 head(ess)
 ```
 
-```{r}
-postHPDplot(mcmc.samples$chain1[,'r'],rnd=5,xlab='r',ylab='Density')
+In this case the key parameter $r$ has an $\hat{R}$ between `r round(rhat$psrf[1,1],3)` and `r round(rhat$psrf[1,2],3)`, with an effective sample size of `r round(ess[1])` indicating a good convergence. The `postHPDplot()` in the _nimbleCarbon_ package offers a convenient way to display marginal posterior distributions highlighting user-defined highest posterior density interval:
+
+```{r posterior ex1, fig.height=5,fig.width=5}
+postHPDplot(mcmc.samples$chain1[,'r'],rnd=5,xlab='r',ylab='Density',prob = 0.95)
 ```
 
-## Prior and Posterior Predictive Check
+The _nimbleCarbon_ package offers also a function for visualising growth models using a list of parameter values. This can be used to carry out prior predictive checks (see left panel below) or to plot the fitted growth model incorporating the uncertainty of the parameters (right panel below).  
 
-```{r}
+```{r, prior and posterior plot ex1, fig.width=7,fig.height=4}
 par(mfrow=c(1,2))
 set.seed(123)
-modelPlot(dExponentialGrowth,a=a,b=b,params=list(r=rexp(100,1/0.0004)),alpha = 0.1,ylim=c(0,0.003),main='Prior')
+modelPlot(dExponentialGrowth,a=a,b=b,params=list(r=rexp(100,1/0.0004)),alpha = 0.1,ylim=c(0,0.003),main='Prior',type='spaghetti')
 lines(a:b,pi,col=2,lty=2,lwd=2)
-modelPlot(dExponentialGrowth,a=a,b=b,params=list(r=mcmc.samples$chain1[,'r']),nsample=100,alpha=0.1,ylim=c(0,0.003),main='Posterior')
+modelPlot(dExponentialGrowth,a=a,b=b,params=list(r=mcmc.samples$chain1[,'r']),nsample=100,alpha=0.1,ylim=c(0,0.003),main='Posterior',type='spaghetti')
 lines(a:b,pi,col=2,lty=2,lwd=2)
 ```
 
+# Example 2: Logistic Growth and Model Comparison
+
+## Data Preparation
+
+Now let's consider an empirical case study this time to introduce another growth model, as well as some recommended data pre-processing, how to carry out model comparison, and posterior predictive check. We will use a subset of the EUROEVOL dataset provided in the _rcarbon_ package, examining the radiocarbon record from Denmark:
+
+```{r ex2 data prep 1}
+data(euroevol)
+DK=subset(euroevol,Country=="Denmark") #subset of Danish dates
+DK.caldates=calibrate(x=DK$C14Age,errors=DK$C14SD,calCurves='intcal20',verbose=FALSE) #calibration
+```
+
+In the case of SPD analysis a common practice for handling inter-site variation in sampling intensity consists of grouping dates that are close in time, aggregating their summed probabilities and normalise to sum to unity (see Timpson et al 2014, Crema and Bevan 2020 for details). This approach is not possible here, where we instead select a random date from each cluster. This can be achieved using the `binPrep()` ad `thinDates()` functions in _rcarbon_:
+
+```{r ex2 binning and thinning}
+# Generate bins grouping dates within 100 yrs
+DK.bins = binPrep(sites=DK$SiteID,ages=DK$C14Age,h=100) 
+# Sample 1 date from each bin, selecting randomly the sample with the smallest error
+DK.caldates = DK.caldates[thinDates(ages=DK$C14Age,  errors=DK$C14SD, bins=DK.bins, size=1, thresh=1,seed=123,method='splitsample')]
+```
+
+We will in this case examine the density of radiocarbon dates between 8000 and 4500 cal BP. To obtain the relevant subset from `DK.caldates` we will use the `subset()` function, taking into consideration only samples with a cumulative probability equal or larger than 0.5 within the time window of analysis:
+
+```{r ex2 subsetting}
+DK.caldates = subset(DK.caldates,BP<=8000&BP>=4500,p=0.5)
+```
+
+Finally we extract the $^{14}$C ages and the associated errors from our subset:
+
+```{r ex2 extracting cra and errors}
+obs.CRA = DK.caldates$metadata$CRA
+obs.Errors = DK.caldates$metadata$Error
+```
+
+We can also visualise the SPD distribution of the resulting subset using the `spd()` function in _rcarbon_:
+
+```{r ex2 spd,fig.width=6,fig.height=5}
+obs.spd = spd(DK.caldates,timeRange=c(8000,4500),verbose=FALSE)
+plot(obs.spd)
+```
+
+Before defining our growth models we can set our input data and constants as we did earlier:
+
+```{r ex2 constants and data}
+constants <- list(N=length(obs.CRA),calBP=intcal20$CalBP,C14BP=intcal20$C14Age,C14err=intcal20$C14Age.sigma,start=8000,end=4500)
+data <- list(X=obs.CRA,sigma=obs.Errors)
+```
+
+## Growth Models
+
+We will consider an exponential and a logistic growth model. The former is the same as what we used earlier:
+
+```{r ex2 exponential model}
+m1 <- nimbleCode({
+      for (i in 1:N){
+        # Growth Model Likelihood
+        theta[i] ~ dExponentialGrowth(a=start,b=end,r=r);
+        # Calibration
+        mu[i] <- interpLin(z=theta[i], x=calBP[], y=C14BP[]);
+        sigmaCurve[i] <- interpLin(z=theta[i], x=calBP[], y=C14err[]);
+        sd[i] <- (sigma[i]^2+sigmaCurve[i]^2)^(1/2);
+        X[i] ~ dnorm(mean=mu[i],sd=sd[i]);
+      }
+      # Prior
+      r ~ dexp(1/0.004); # Prior
+    })  
+
+```
+
+The logistic growth model in _nimbleCarbon_ is defined as follows:
+
+$$ \pi_{a-t} =  \frac{\frac{1}{1+\frac{1-k}{k}e^{-rt}}}   {\sum_{t=0}^{a-b}\frac{1}{1+\frac{1-k}{k}e^{-rt}}}$$
+
+where $k$ is size of the population at $t=0$, expressed as the proportion of the carrying capacity. The numerator of the right term is in fact a special case of the following equation:
+
+$$ N_{t} = \frac{K}{1+\frac{K-N_0}{N_0}e^{-rt}} $$
+
+where K is set to 1, and $N_0=k$. To make a `nimbleCode` of the logistic growth model we will use `dLogisticGrowth` which requires the boundary parameters `a` and `b`, the initial population size `k`, and the growth rate `r`. Here we fix `a` and `b` to the boundary of our time-window, while and use an exponential prior for `k` and `r`. Notice that for the former we truncate our value between 0.001 and 0.2: 
 
 
+```{r ex logistic model}
+m2 <- nimbleCode({
+      for (i in 1:N){
+        # Growth Model Likelihood
+        theta[i] ~ dLogisticGrowth(a=start,b=end,k=k,r=r);
+        # Calibration
+        mu[i] <- interpLin(z=theta[i], x=calBP[], y=C14BP[]);
+        sigmaCurve[i] <- interpLin(z=theta[i], x=calBP[], y=C14err[]);
+        sd[i] <- (sigma[i]^2+sigmaCurve[i]^2)^(1/2);
+        X[i] ~ dnorm(mean=mu[i],sd=sd[i]);
+      }
+      # Prior
+      r ~ dexp(1/0.004); # Prior
+      k ~ T(dexp(1/0.05),0.001,0.2)
+    })  
+```
+
+Finally we define our initialisation functions for the two models so that chains have different starting parameter values for the growth models. 
+
+```{r ex2 init}
+m.dates = medCal(DK.caldates)
+if(any(m.dates>a|m.dates<b)){m.dates[m.dates>a]=a;m.dates[m.dates<b]=b}
+inits.function.m1 = function() list(r=rexp(1,1/0.0004),theta=m.dates)
+inits.function.m2 = function() list(r=rexp(1,1/0.0004),k=runif(1,0.0001,0.2),theta=m.dates)
+```
+
+## MCMC, Diagnostic, Model Comparison, and Posterior Predictive Check
+
+We are now ready to use the `nimbleMCMC()` function again, but this time we: 1) define the random seed using the `setSeed` argument to ensure full reproducibility; and 2) we set the argument `WAIC` to TRUE so the models can be compared using the Widely Applicable Information Criterion: 
+
+```{r ex2 mcmc}
+mcmc.samples.m1<- nimbleMCMC(code = m1,constants = constants,data = data,niter = 15000, nchains = 2, thin=1, nburnin = 3000, progressBar = FALSE, monitors=c('r','theta'), inits=inits.function.m1, samplesAsCodaMCMC=TRUE,setSeed=c(123,456),WAIC=TRUE)
+mcmc.samples.m2<- nimbleMCMC(code = m2,constants = constants,data = data,niter = 15000, nchains = 2, thin=1, nburnin = 3000, progressBar = FALSE, monitors=c('r','k','theta'), inits=inits.function.m2, samplesAsCodaMCMC=TRUE,setSeed=c(123,456),WAIC=TRUE)
+```
+
+The model diagnostics and the trace plot indicates a fairly good convergence for both models:
+
+```{r ex2 diagnostic, fig.width=6.5,fig.height=7}
+par(mfrow=c(3,2))
+plot(as.numeric(mcmc.samples.m1$samples$chain1[,'r']),type='l',xlab='MCMC Iteration',ylab='r',main='m1 r chain 1')
+plot(as.numeric(mcmc.samples.m1$samples$chain2[,'r']),type='l',xlab='MCMC Iteration',ylab='r',main='m1 r chain 2')
+plot(as.numeric(mcmc.samples.m2$samples$chain1[,'r']),type='l',xlab='MCMC Iteration',ylab='r',main='m2 r chain 1')
+plot(as.numeric(mcmc.samples.m2$samples$chain2[,'r']),type='l',xlab='MCMC Iteration',ylab='r',main='m2 r chain 2')
+plot(as.numeric(mcmc.samples.m2$samples$chain1[,'k']),type='l',xlab='MCMC Iteration',ylab='r',main='m2 k chain 1')
+plot(as.numeric(mcmc.samples.m2$samples$chain2[,'k']),type='l',xlab='MCMC Iteration',ylab='r',main='m2 k chain 2')
+
+m1.rhat=gelman.diag(mcmc.samples.m1$samples)
+m2.rhat=gelman.diag(mcmc.samples.m2$samples)
+m1.ess=effectiveSize(mcmc.samples.m1$samples)
+m2.ess=effectiveSize(mcmc.samples.m2$samples)
+head(m1.rhat$psrf)
+head(m2.rhat$psrf)
+m1.ess[1]
+m2.ess[1:2]
+```
+
+
+We can now examine the marginal posterior distributions of the two models 
+
+```{r ex2 marginal posteriors,fig.width=9,fig.height=3.5}
+par(mfrow=c(1,3))
+postHPDplot(mcmc.samples.m1$samples$chain1[,'r'],rnd=5,xlab='r',ylab='Density',prob = 0.95,main='Model 1: r')
+postHPDplot(mcmc.samples.m2$samples$chain1[,'r'],rnd=5,xlab='r',ylab='Density',prob = 0.95,main='Model 2: r')
+postHPDplot(mcmc.samples.m2$samples$chain1[,'k'],rnd=5,xlab='k',ylab='Density',prob = 0.95,main='Model 2: k')
+```
+
+as well as the shape of the growth models suggested by the posterior parameters:
+
+```{r posterior model plot ex2, fig.width=7,fig.height=4}
+params.m1 = list(r=c(mcmc.samples.m1$samples$chain1[,'r'],mcmc.samples.m1$samples$chain2[,'r']))
+params.m2 = list(r=c(mcmc.samples.m2$samples$chain1[,'r'],mcmc.samples.m2$samples$chain2[,'r']),k=c(mcmc.samples.m2$samples$chain1[,'k'],mcmc.samples.m2$samples$chain2[,'k']))
+
+par(mfrow=c(1,2))
+set.seed(123)
+modelPlot(dExponentialGrowth,a=8000,b=4500,params=params.m1,nsample=100,alpha = 0.1,ylim=c(0,0.001),main='m1: Exponential',type='envelope')
+modelPlot(dLogisticGrowth,a=8000,b=4500,params=params.m2,nsample=100,alpha = 0.1,ylim=c(0,0.001),main='m2: Logistic',type='envelope')
+```
+
+This leads us to question whether an one parameter exponential model is sufficient for describing the observed data compared to a two-parameter logistic growth model. We can formally make a model comparison using the WAIC values computed by the `nimbleMCMC()` function. The _nimbleCarbon_ package provide a handy function for extracting WAIC values and computing $\Delta WAIC$ and WAIC weights:
+
+```{r model comparison ex2}
+compare.models(mcmc.samples.m1,mcmc.samples.m2)
+```
+
+The results indicate a strong support for model 2 over model 1 in this case. While this provides a relative measure of the model's predictive performance we cannot tell whether it can comprehensively explain the observed temporal frequencies of radiocarbon dates. One way to evaluate the model performance is to generate SPDs from the fitted posterior models and visually compare this to the observed SPD. The approach is similar to Monte-Carlo Null-Hypothesis Testing approach introduced by Shennan et al (2013) and implemented in _rcarbon_'s `modelTest()` function, and it is effectively a form of posterior predictive check. The `postPredSPD()` function in _nimbleCarbon_ can be used to generate observed and an ensemble of fitted SPDs using the posterior parameter samples:
+
+```{r posterior predictive check ex2,fig.width=6.5,fig.height=5}
+set.seed(123)
+pp.check.m2=postPredSPD(obs.CRA,errors = obs.Errors,calCurve = 'intcal20',model = dLogisticGrowth,a = 8000,b=4500,params=list(r=mcmc.samples.m2$samples$chain1[,'r'],k=mcmc.samples.m2$samples$chain1[,'k']),nsim = 100,ncores = 3,verbose=FALSE)
+plot(pp.check.m2)
+```
+
+While the model (grey envelope) shows generally a good fit to the data, although there are some intervals where the observed density of radiocarbon dates is lower (show in blue) or higher (shown in red) than the fitted model. 
+
+
+# References
