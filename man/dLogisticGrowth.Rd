@@ -22,10 +22,14 @@ rLogisticGrowth(n, a, b, k, r)
 
 \item{log}{TRUE or 1 to return log probability. FALSE or 0 to return probability.}
 
-\item{n}{number of random draws, each returning a vector of length len. Currently only n = 1 is supported, but the argument exists for standardization of "r" functions.}
+\item{n}{number of random draws. Currently only n = 1 is supported, but the argument exists for standardization of "r" functions.}
 }
 \description{
 Density and random generation of a logistic growth model distribution.
+}
+\examples{
+p = list(k=0.01,r=0.007)
+modelPlot(model = dLogisticGrowth,a=6000,b=4000,params=p,alpha = 1)
 }
 \author{
 Enrico Crema
