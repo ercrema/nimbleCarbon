@@ -21,6 +21,12 @@
         Rdist = "dDoubleExponentialGrowth(a,b,r1,r2,mu)",
         pqAvail = FALSE
       )))
+    registerDistributions(list(
+      dExponentialLogisticGrowth = list(
+        BUGSdist = "dExponentialLogisticGrowth(a,b,k,r1,r2,mu)",
+        Rdist = "dExponentialLogisticGrowth(a,b,k,r1,r2,mu)",
+        pqAvail = FALSE
+      )))
   })
   suppressMessages({
     compileNimble(interpLin)
