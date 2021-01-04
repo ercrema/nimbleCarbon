@@ -9,11 +9,13 @@
 #' @param r2 growth rate after change point mu.
 #' @param mu change point (in BP).
 #' @param log TRUE or 1 to return log probability. FALSE or 0 to return probability.
-#' @param n number of random draws, each returning a vector of length len. Currently only n = 1 is supported, but the argument exists for standardization of "r" functions.
+#' @param n number of random draws. Currently only n = 1 is supported, but the argument exists for standardization of "r" functions.
 #' @author Enrico Crema
 
 NULL
-
+#' @examples
+#' p = list(r1=0.003,r2=-0.001,mu=5200)
+#' modelPlot(model = dDoubleExponentialGrowth,a=6000,b=4000,params=p,alpha = 1)
 #' @rdname dDoubleExponentialGrowth
 #' @import nimble
 #' @export

@@ -8,11 +8,13 @@
 #' @param k initial proportion of the carrying capacity (must be between 0 and 1).
 #' @param r intrinsic growth rate.
 #' @param log TRUE or 1 to return log probability. FALSE or 0 to return probability.
-#' @param n number of random draws, each returning a vector of length len. Currently only n = 1 is supported, but the argument exists for standardization of "r" functions.
+#' @param n number of random draws. Currently only n = 1 is supported, but the argument exists for standardization of "r" functions.
 #' @author Enrico Crema
 
 NULL
-
+#' @examples
+#' p = list(k=0.01,r=0.007)
+#' modelPlot(model = dLogisticGrowth,a=6000,b=4000,params=p,alpha = 1)
 #' @rdname dLogisticGrowth
 #' @import nimble
 #' @export
