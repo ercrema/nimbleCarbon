@@ -33,7 +33,7 @@ plot.spdppc = function(x, type='envelope', nsample=NULL, interval=0.90, obs.lwd=
     xlabel <- "Years cal BP"
     xlim <- c(max(plotyears),min(plotyears))
   } else if (calendar=="BCAD"){
-    plotyears <- BPtoBCAD(a:b)
+    plotyears <- BPtoBCAD(x$obs$calBP)
     xlabel <- "Years BC/AD"
     if (all(range(plotyears)<0)){xlabel <- "Years BC"}
     if (all(range(plotyears)>0)){xlabel <- "Years AD"}
