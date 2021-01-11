@@ -20,6 +20,9 @@
 # RStudio files
 .Rproj.user/
 
+# OxCal Installation
+/OxCal
+
 # produced vignettes
 
 # OAuth2 token, see https://github.com/hadley/httr/releases/tag/v0.3
