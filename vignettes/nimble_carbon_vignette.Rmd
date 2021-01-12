@@ -130,7 +130,7 @@ or alternatively when running multiple chains can be defined as series of functi
 inits.function = function() list(r=rexp(1,1/0.0004),theta=m.dates)
 ```
 
-The example below consists of 10,000 iterations over 2 chains with a burn-in of 2000 steps (please note this can take about 20 minutes) :
+The example below consists of 10,000 iterations over 2 chains with a burn-in of 2000 steps^[This took approximately 20 minutes on a i7-7560U linux machine with 16G of RAM]:
 
 ```{r mcmc samples ex1,results='hide'}
 mcmc.samples<- nimbleMCMC(code = model,constants = constants,data = data,niter = 10000, nchains = 2, thin=1, nburnin = 2000, progressBar = FALSE, monitors=c('r','theta'), inits=inits.function, samplesAsCodaMCMC=TRUE,setSeed=c(123,456))
@@ -314,8 +314,8 @@ We can now examine the marginal posterior distributions of the two models
 
 ```{r ex2 marginal posteriors,fig.width=9,fig.height=3.5}
 par(mfrow=c(1,3))
-postHPDplot(mcmc.samples.m1$samples$chain1[,'r'],rnd=5,xlab='r',ylab='Density',prob = 0.95,main='Model 1: r')
-postHPDplot(mcmc.samples.m2$samples$chain1[,'r'],rnd=5,xlab='r',ylab='Density',prob = 0.95,main='Model 2: r')
+postHPDplot(mcmc.samples.m1$samples$chain1[,'r'],rnd=5,xlab='r',ylab='Density',prob = 0.95,main='Model 1: r',xlim=c(0.00055,0.0032))
+postHPDplot(mcmc.samples.m2$samples$chain1[,'r'],rnd=5,xlab='r',ylab='Density',prob = 0.95,main='Model 2: r',xlim=c(0.00055,0.0032))
 postHPDplot(mcmc.samples.m2$samples$chain1[,'k'],rnd=5,xlab='k',ylab='Density',prob = 0.95,main='Model 2: k')
 ```
 
@@ -347,5 +347,130 @@ plot(pp.check.m2)
 
 While the model (grey envelope) shows generally a good fit to the data, although there are some intervals where the observed density of radiocarbon dates is lower (show in blue) or higher (shown in red) than the fitted model. 
 
+# Example 3: Phase Models
+
+The _nimble_ framework can also be used for phase modelling where the objective is to identify boundary estimates on a group of dates. The example below models an simulated dataset with a start date at 4500 cal BP and an end date at 3800 cal BP:
+
+```{r phase model,fig.width=7.5,fig.height=4.5}
+# Simulate Observed Data
+a = 4500
+b = 3800
+set.seed(123)
+n = 300
+calendar.dates = sample(a:b,size=n)
+cra = round(uncalibrate(calendar.dates)$ccCRA) #back-calibrate in 14C ages
+cra.error = rep(20,n) #assign error of 20 years
+
+# Define NIMBLE Model
+phasemodel <- nimbleCode({
+  for (i in 1:N){
+    #  Likelihood
+    theta[i] ~ dunif(alpha[1],alpha[2]);
+    # Calibration
+    mu[i] <- interpLin(z=theta[i], x=calBP[], y=C14BP[]);
+    sigmaCurve[i] <- interpLin(z=theta[i], x=calBP[], y=C14err[]);
+    sd[i] <- (sigma[i]^2+sigmaCurve[i]^2)^(1/2);
+    X[i] ~ dnorm(mean=mu[i],sd=sd[i]);
+  }
+  # Prior
+  alpha[1] ~ dunif(0,50000);
+  alpha[2] ~ T(dunif(0,50000),alpha[1],50000)
+})  
+
+#define constant, data, and inits:
+data("intcal20") 
+constants <- list(N=n,calBP=intcal20$CalBP,C14BP=intcal20$C14Age,C14err=intcal20$C14Age.sigma)
+data <- list(X=cra,sigma=cra.error)
+m.dates = medCal(calibrate(cra,cra.error,verbose = FALSE))
+inits <- list(alpha=c(3000,5000),theta=m.dates)
+
+#Run MCMC
+mcmc.samples<- nimbleMCMC(code = phasemodel,constants = constants,data = data,niter = 20000, nchains = 1, thin=1, nburnin = 5000, progressBar = FALSE, monitors=c('alpha','theta'), inits=inits, samplesAsCodaMCMC=TRUE,set.seed(123))
+
+#Plot Posteriors
+par(mfrow=c(1,2))
+postHPDplot(mcmc.samples[,'alpha[2]'],xlim=c(4600,4400),xlab='Cal BP',ylab='Posterior Probability',main='Start of Phase')
+abline(v=a,lty=2)
+postHPDplot(mcmc.samples[,'alpha[1]'],xlim=c(3900,3700),xlab='Cal BP',ylab='Posterior Probability',main='End of Phase')
+abline(v=b,lty=2)
+```
+
+While the model is able to correctly recover the true parameter values, it should be noted that for general purposes dedicated software packages such as [BCal](https://bcal.shef.ac.uk/) and [OxCal](https://c14.arch.ox.ac.uk/oxcal.html) are recommended, as they provide appropriate MCMC settings and parameter prior and can easily define more complex models with multiple phases and constraints with better performance. However, users interested in utilising dedicated software distributions or bespoke constraints that cannot be straightforwardly defined with these software packages might consider using this package. The _nimbleCarbon_ package does also offer a function (`agreementIndex()`) for computing agreement indices which are used to determine model consistency. The function requires the observed CRA values as well as the posterior samples of each date: 
+
+```{r}
+theta = mcmc.samples[,-c(1:2)] #Exclude columns containing the posterior samples otherthan those associated with each date 
+a=agreementIndex(cra,cra.error,calCurve='intcal20',theta=theta,verbose = F)
+head(a$agreement) #individual agreement indices
+a$overall.agreement #overall agreement index
+```
+
+Although estimates provided by _nimbleCarbon_ are comparable to those computed by _OxCal_ (see below) it is worth bearing in mind that the estimates are computed from the posterior samples, and as such good convergence and a larger number of samples would provide more reliable estimates. 
+
+```{r agreement index, fig.width=5.5,fig.height=5.5}
+#the oxcAAR package provides an R interface for OxCal
+library(oxcAAR) 
+quickSetupOxcal()
+
+# Oxcal Script
+my_oxcal_code <- 'Plot()
+ {
+  Sequence()
+  {
+   Boundary("Start Phase X");
+   Phase("Phase X")
+   {
+    R_Date("Date-001",4570,30);
+    R_Date("Date-002",4455,35);
+    R_Date("Date-003",4590,40);
+    R_Date("Date-004",4540,40);
+    R_Date("Date-005",4530,40);
+    R_Date("Date-006",4595,26);
+    R_Date("Date-007",4510,30);
+    R_Date("Date-008",4557,25);
+    R_Date("Date-009",4570,30);
+    R_Date("Date-010",4580,50);
+    R_Date("Date-011",4590,50);
+    R_Date("Date-012",4560,40);
+    R_Date("Date-013",4440,40);
+    R_Date("Date-014",4470,40);
+    R_Date("Date-015",4516,29);
+    R_Date("Date-016",4522,27);
+    R_Date("Date-017",4533,28);
+    R_Date("Date-018",4590,30);
+    R_Date("Date-019",4517,20);
+   };
+   Boundary("End Phase X");
+  };
+ };'
+
+# Execute OxCal Model Locally and Recover Output
+my_result_file <- executeOxcalScript(my_oxcal_code)
+my_result_text <- readOxcalOutput(my_result_file)
+# Extract vector of agreement indices
+index=grep(".posterior.agreement",my_result_text)
+tmp=my_result_text[index]
+oxcal.aindex=unlist(lapply(strsplit(tmp,"[=,;]"),function(x){return(as.numeric(x[[2]]))}))
+
+
+### Fit Phase Model using Nimble
+cra = c(4570,4455,4590,4540,4530,4595,4510,4557,4570,4580,4590,4560,4440,4470,4516,4522,4533,4590,4517)
+cra.error =c(30,35,40,40,40,26,30,25,30,50,50,40,40,40,29,27,28,30,20)
+n = length(cra)  
+m.dates = medCal(calibrate(cra,cra.error,verbose = FALSE))
+
+data <- list(X=cra,sigma=cra.error)
+constants <- list(N=n,calBP=intcal20$CalBP,C14BP=intcal20$C14Age,C14err=intcal20$C14Age.sigma)
+inits <- list(alpha=c(5000,5500),theta=m.dates)
+
+mcmc.samples<- nimbleMCMC(code = phasemodel,constants = constants,data = data,niter = 100000, nchains = 1, thin=1, nburnin = 10000, progressBar = FALSE, monitors=c('alpha','theta'), inits=inits, samplesAsCodaMCMC=TRUE,setSeed = c(12345))
+
+# Compute Agreement Index
+a.nimble=agreementIndex(cra,cra.error,theta=mcmc.samples[,-c(1:2)],verbose=FALSE)
+
+# Compare Agreement Indices
+plot(oxcal.aindex,a.nimble$agreement,pch=20,xlab='OxCal Agreement Index',ylab='nimbleCarbon Agreement Index')
+abline(a=0,b=1,lty=2)
+```
 
 # References
+
