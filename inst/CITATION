@@ -1,0 +1,11 @@
+citHeader("To cite nimbleCarbon in publications use:")
+citEntry(entry = "Manual",
+    title = "nimbleCarbon: Models and Utility Functions for the Analysis of Radiocarbon Dates with 'nimble'",
+    author = personList(as.person("Enrico R. Crema")),
+    year = "2021",
+    url = "https://github.com/ercrema/nimbleCarbon",
+    textVersion =
+    paste("Crema, E.R. (2021)",
+    "nimbleCarbon v0.1.0: Models and Utility Functions for the Analysis of Radiocarbon Dates with 'nimble'",
+    "URL https://github.com/ercrema/nimbleCarbon") 		
+  )
