@@ -33,7 +33,7 @@ The _nimbleCarbon_ package is still experimental and can be installed only via G
 
 ```{r installing nimbleCarbon,eval=FALSE,message=FALSE,warning=FALSE}
 library(devtools)
-install_github('ercrema/nimbleCarbon',auth_token='58fd474f4001e364c30a642e5013972e5a2fb7ae')
+install_github('ercrema/nimbleCarbon')
 ```
 
 Once the installation is completed the package can be loaded using the `library()` command:
