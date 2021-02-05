@@ -130,6 +130,45 @@ The example below consists of 10,000 iterations over 2 chains with a burn-in of 
 mcmc.samples<- nimbleMCMC(code = model,constants = constants,data = data,niter = 10000, nchains = 2, thin=1, nburnin = 2000, progressBar = FALSE, monitors=c('r','theta'), inits=inits.function, samplesAsCodaMCMC=TRUE,setSeed=c(123,456))
 ```
 
+### Running Chains in Parallel
+
+The `nimbleMCMC()` does not run MCMC in parallel chains across different cores. However, it is possible to write a pipeline to achieve this by making use of the `parallel` package. The script below has been adapted from the [tutorial provided on the nimble website](The [nimble website provides a useful tutorial for this](https://r-nimble.org/nimbleExamples/parallelizing_NIMBLE.html) and generates the same output as the MCMC above.
+
+```{r, mcmc in parallel, results='hide',message=FALSE,warning=FALSE,eval=FALSE}
+# Setup parallel processing:
+library(parallel)
+ncores <- 2
+cl <- makeCluster(ncores)
+
+# Generate a single wrapper function:
+runFun <- function(seed, data, constants, m.dates) {
+  library(nimbleCarbon) 
+  inits.function = function() list(r=rexp(1,1/0.0004),theta=m.dates)
+  
+  model <- nimbleCode({
+    for (i in 1:N){
+      theta[i] ~ dExponentialGrowth(a=start,b=end,r=r);
+      mu[i] <- interpLin(z=theta[i], x=calBP[], y=C14BP[]);
+      sigmaCurve[i] <- interpLin(z=theta[i], x=calBP[], y=C14err[]);
+      sd[i] <- (sigma[i]^2+sigmaCurve[i]^2)^(1/2);
+      X[i] ~ dnorm(mean=mu[i],sd=sd[i]);
+    }
+    r ~ dexp(1/0.004); 
+  })  
+    results<- nimbleMCMC(code = model,constants = constants,data = data,niter = 10000, nchains = 1, thin=1, nburnin = 2000, progressBar = FALSE, monitors=c('r','theta'), inits=inits.function, samplesAsCodaMCMC=TRUE,setSeed=seed)
+  
+  return(results)
+}
+
+# Run the model in parallel:
+seeds = c(123,456)
+chain_output = parLapply(cl = cl, X = seeds, fun = runFun, data = data, constants=constants,m.dates=m.dates)
+stopCluster(cl)
+
+# Convert into a mcmc.list object for diagnostic (see below)
+chain_output=coda::mcmc.list(chain_output)
+```
+
 ## Diagnostics and Posterior Distributions
 
 The argument `samplesAsCodaMCMC` in `nimbleMCMC()` ensures that the output is stored as a `mcmc` class object of the [coda](https://cran.r-project.org/package=coda) package, which offers a wide range of MCMC diagnostics. First, trace plots of the posterior samples can be plotted using the standard `plot()` function in R as shown in the example below:
