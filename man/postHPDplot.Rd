@@ -21,7 +21,7 @@ postHPDplot(
 
 \item{prob}{Highest posterior density interval. Default is 0.9.}
 
-\item{bw}{The smoothing bandwidth to be used. See \link{\code{density}} for details. Default is "SJ".}
+\item{bw}{The smoothing bandwidth to be used. See \code{\link{density}} for details. Default is "SJ".}
 
 \item{hpd.col}{Fill colour for the highest density interval. Default is 'lightblue'. Ignored when \code{HPD} is set to FALSE.}
 

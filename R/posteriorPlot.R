@@ -3,7 +3,7 @@
 #' @description Plot marginal posterior distribution highlighting user-defined higher posterior density interval.
 #' @param x Posterior samples
 #' @param prob Highest posterior density interval. Default is 0.9.
-#' @param bw The smoothing bandwidth to be used. See \link{\code{density}} for details. Default is "SJ".
+#' @param bw The smoothing bandwidth to be used. See \code{\link{density}} for details. Default is "SJ".
 #' @param hpd.col Fill colour for the highest density interval. Default is 'lightblue'. Ignored when \code{HPD} is set to FALSE.
 #' @param line.col Line color for the density plot. Default is 'darkgrey'.
 #' @param HPD Whether the highest posterior density interval is highlighted or not. Default is TRUE.
