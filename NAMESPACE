@@ -23,5 +23,6 @@ import(graphics)
 import(nimble)
 import(rcarbon)
 import(snow)
-import(stats)
 import(utils)
+importFrom("stats", "density", "quantile")
+

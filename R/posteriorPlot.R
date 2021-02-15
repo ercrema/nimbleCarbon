@@ -9,7 +9,7 @@
 #' @param HPD Whether the highest posterior density interval is highlighted or not. Default is TRUE.
 #' @param show.hpd.val Whether the highest posterior density interval is displayed as subtitle. Default is TRUE.
 #' @param rnd Integer indicating the number of decimal places to be used in the reporting of the highest posterior density interval.
-#' @import stats
+#' @param ... other graphical parameters.
 #' @import grDevices
 #' @import graphics
 #' @import utils

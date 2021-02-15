@@ -1,3 +1,5 @@
+if(getRversion() >= "2.15.1")  utils::globalVariables(c("i"))
+
 #' @title SPD-based Posterior Predictive Check
 #'
 #' @description Generates SPDs from posterior samples.
@@ -18,7 +20,6 @@
 #' \item{\code{obs}} {A data.frame containing the years (in Cal BP) and the corresponding summed probability in the observed data.}
 #' \item{\code{spdmat}} {A matrix containing the summed probability distribution of the simulated data.}
 #' }
-#' @import stats
 #' @import grDevices
 #' @import graphics
 #' @import doSNOW 
