@@ -32,6 +32,8 @@ postHPDplot(
 \item{HPD}{Whether the highest posterior density interval is highlighted or not. Default is TRUE.}
 
 \item{show.hpd.val}{Whether the highest posterior density interval is displayed as subtitle. Default is TRUE.}
+
+\item{...}{other graphical parameters.}
 }
 \description{
 Plot marginal posterior distribution highlighting user-defined higher posterior density interval.
