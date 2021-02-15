@@ -189,7 +189,7 @@ ess = effectiveSize(mcmc.samples)
 head(ess)
 ```
 
-In this case the key parameter $r$ has an $\hat{R}$ between `r round(rhat$psrf[1,1],3)` and `r round(rhat$psrf[1,2],3)`, with an effective sample size of `r round(ess[1])` indicating a good convergence. The `postHPDplot()` in the _nimbleCarbon_ package offers a convenient way to display marginal posterior distributions highlighting user-defined highest posterior density interval:
+In this case the key parameter $r$ has an $\hat{R}$ close to 1 and a fairly large reffective sample size indicating a good convergence. The `postHPDplot()` in the _nimbleCarbon_ package offers a convenient way to display marginal posterior distributions highlighting user-defined highest posterior density interval:
 
 ```{r posterior ex1, fig.height=5,fig.width=5}
 postHPDplot(mcmc.samples$chain1[,'r'],rnd=5,xlab='r',ylab='Density',prob = 0.95)
