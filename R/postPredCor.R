@@ -12,6 +12,6 @@ postPredCor= function(x,method='pearson')
     stop('x must be of class "spdppc"')
   }
   xx = cbind(x$obs$PrDens,x$simmatrix)
-  res = as.numeric(cor(xx,method=method)[1,])
+  res = as.numeric(cor(xx,method=method)[1,-1])
   return(res)
 }
