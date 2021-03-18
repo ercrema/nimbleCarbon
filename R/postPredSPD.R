@@ -11,7 +11,7 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c("i"))
 #' @param b upper (latest) limit of the distribution (in BP).
 #' @param params List of vectors containing model parameters. The names attribute of each vector should match growth model parameters.
 #' @param nsim Number of SPDs to be generated.  Default is the length of the parameter vectors supplied in the argument \code{params}.
-#' @param method Method for the creation of random dates from the fitted model. Either 'uncalsample' or 'calsample'. Default is 'calsample'.
+#' @param method Method for the creation of random dates from the fitted model. Either 'uncalsample' or 'calsample'.
 #' @param spdnormalised A logical variable indicating whether the total probability mass of the SPD is normalised to sum to unity for both observed and simulated data. Default is TRUE.
 #' @param ncores Number of cores used for for parallel execution. Default is 1.
 #' @param verbose A logical variable indicating whether extra information on progress should be reported. Default is TRUE.
@@ -28,7 +28,7 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c("i"))
 #' @import rcarbon
 #' @export 
 
-postPredSPD = function(x,errors,calCurve,model,a,b,params,nsim,method='uncalsample',spdnormalised=TRUE,ncores=1,verbose=TRUE)
+postPredSPD = function(x,errors,calCurve,model,a,b,params,nsim,method=NULL,spdnormalised=TRUE,ncores=1,verbose=TRUE)
 {
   #Sanity checks ####
   if (length(unique(unlist(lapply(params,length))))>1)
@@ -48,10 +48,11 @@ postPredSPD = function(x,errors,calCurve,model,a,b,params,nsim,method='uncalsamp
     ncores=1
   }	
   
-  if (!any(method%in%c("uncalsample","calsample")))
+  if (!any(method%in%c("uncalsample","calsample"))|is.null(method))
   {
     stop("The 'method' argument must be either 'uncalsample' or 'calsample'")
   }
+  
   
   
   # General Settings ####
