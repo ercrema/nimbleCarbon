@@ -7,7 +7,7 @@ The _nimbleCarbon_ package provides utility functions and bespoke probability di
 * Double-Exponential
 * Exponential-Logistic
 
-Community contributions of additional growth models and features are welcome.
+Community contributions of additional growth models and features are welcome. For more information and tutorial please check the [vignette](https://htmlpreview.github.io/?https://github.com/ercrema/nimbleCarbon/blob/main/vignettes/nimble_carbon_vignette.html).
 
 
  
