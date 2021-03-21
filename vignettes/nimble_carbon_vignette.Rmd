@@ -210,7 +210,7 @@ lines(a:b,pi,col=2,lty=2,lwd=2)
 
 ## Data Preparation
 
-Now let's consider another growth model by examining an empirical case study. We will use a subset of the EUROEVOL dataset (Manning et al 2016) provided in the _rcarbon_ package (Crema and Bevan 2020), examining the radiocarbon record from Denmark:
+Now let's consider another growth model by examining an empirical case study. We will use a subset of the EUROEVOL dataset (Manning et al 2016) provided in the _rcarbon_ package (Crema and Bevan 2021), examining the radiocarbon record from Denmark:
 
 ```{r ex2 data prep 1}
 data(euroevol)
@@ -218,7 +218,7 @@ DK=subset(euroevol,Country=="Denmark") #subset of Danish dates
 DK.caldates=calibrate(x=DK$C14Age,errors=DK$C14SD,calCurves='intcal20',verbose=FALSE) #calibration
 ```
 
-In the case of SPD analysis a common practice for handling inter-site variation in sampling intensity consists of grouping dates that are close in time, aggregating their summed probabilities and normalise to sum to unity (see Timpson et al 2014, Crema and Bevan 2020 for details). This approach is not possible here, where we instead select a random date from each 'bin'. This can be achieved using the `binPrep()` ad `thinDates()` functions in _rcarbon_:
+In the case of SPD analysis a common practice for handling inter-site variation in sampling intensity consists of grouping dates that are close in time, aggregating their summed probabilities and normalise to sum to unity (see Timpson et al 2014, Crema and Bevan 2021 for details). This approach is not possible here, where we instead select a random date from each 'bin'. This can be achieved using the `binPrep()` ad `thinDates()` functions in _rcarbon_:
 
 ```{r ex2 binning and thinning}
 # Generate bins grouping dates within 100 yrs
@@ -227,10 +227,10 @@ DK.bins = binPrep(sites=DK$SiteID,ages=DK$C14Age,h=100)
 DK.caldates = DK.caldates[thinDates(ages=DK$C14Age,  errors=DK$C14SD, bins=DK.bins, size=1, thresh=1,seed=123,method='splitsample')]
 ```
 
-We will in this case examine the density of radiocarbon dates between 8000 and 4500 cal BP. To obtain the relevant subset from `DK.caldates` we will use the `subset()` function, taking into consideration only samples with a cumulative probability equal or larger than 0.5 within the time window of analysis:
+We will in this case examine the density of radiocarbon dates between 7500 and 4500 cal BP. To obtain the relevant subset from `DK.caldates` we will use the `subset()` function, taking into consideration only samples with a cumulative probability equal or larger than 0.5 within the time window of analysis:
 
 ```{r ex2 subsetting}
-DK.caldates = subset(DK.caldates,BP<=8000&BP>=4500,p=0.5)
+DK.caldates = subset(DK.caldates,BP<=7500&BP>=4500,p=0.5)
 ```
 
 Finally we extract the $^{14}$C ages and the associated errors from our subset
@@ -243,14 +243,14 @@ obs.Errors = DK.caldates$metadata$Error
 and visualise the SPD distribution of the resulting subset using the `spd()` function in _rcarbon_
 
 ```{r ex2 spd,fig.width=6,fig.height=5}
-obs.spd = spd(DK.caldates,timeRange=c(8000,4500),verbose=FALSE)
+obs.spd = spd(DK.caldates,timeRange=c(7500,4500),verbose=FALSE)
 plot(obs.spd)
 ```
 
 Finally, before defining our growth models we can set our input data and constants as we did earlier:
 
 ```{r ex2 constants and data}
-constants <- list(N=length(obs.CRA),calBP=intcal20$CalBP,C14BP=intcal20$C14Age,C14err=intcal20$C14Age.sigma,start=8000,end=4500)
+constants <- list(N=length(obs.CRA),calBP=intcal20$CalBP,C14BP=intcal20$C14Age,C14err=intcal20$C14Age.sigma,start=7500,end=4500)
 data <- list(X=obs.CRA,sigma=obs.Errors)
 ```
 
@@ -306,7 +306,7 @@ We are now ready to define our initialisation functions for the two models so th
 
 ```{r ex2 init}
 m.dates = medCal(DK.caldates)
-if(any(m.dates>a|m.dates<b)){m.dates[m.dates>a]=a;m.dates[m.dates<b]=b}
+if(any(m.dates>7500|m.dates<4500)){m.dates[m.dates>7500]=7500;m.dates[m.dates<4500]=4500}
 inits.function.m1 = function() list(r=rexp(1,1/0.0004),theta=m.dates)
 inits.function.m2 = function() list(r=rexp(1,1/0.0004),k=runif(1,0.0001,0.2),theta=m.dates)
 ```
@@ -358,8 +358,8 @@ params.m2 = list(r=c(mcmc.samples.m2$samples$chain1[,'r'],mcmc.samples.m2$sample
 
 par(mfrow=c(1,2))
 set.seed(123)
-modelPlot(dExponentialGrowth,a=8000,b=4500,params=params.m1,nsample=100,alpha = 0.1,ylim=c(0,0.001),main='m1: Exponential',type='envelope')
-modelPlot(dLogisticGrowth,a=8000,b=4500,params=params.m2,nsample=100,alpha = 0.1,ylim=c(0,0.001),main='m2: Logistic',type='envelope')
+modelPlot(dExponentialGrowth,a=7500,b=4500,params=params.m1,nsample=100,alpha = 0.1,ylim=c(0,0.001),main='m1: Exponential',type='envelope')
+modelPlot(dLogisticGrowth,a=7500,b=4500,params=params.m2,nsample=100,alpha = 0.1,ylim=c(0,0.001),main='m2: Logistic',type='envelope')
 ```
 
 The shape of the fitted model have some differences so it is worth asking which model provides a better fit to the observed data. We can formally evaluate this question by comparing the WAIC values obtained from the `nimbleMCMC()` function. The _nimbleCarbon_ package provide a handy function for extracting these and computing $\Delta WAIC$ and WAIC weights:
@@ -368,15 +368,28 @@ The shape of the fitted model have some differences so it is worth asking which 
 compare.models(mcmc.samples.m1,mcmc.samples.m2)
 ```
 
-The results indicate a strong support for model 2 over model 1 in this case. While this provides a relative measure of the model's predictive performance we cannot tell whether it can comprehensively explain the observed temporal frequencies of radiocarbon dates. One way to evaluate the model performance in absolute terms is to generate SPDs from the fitted posterior models and visually compare this to the observed SPD. The approach is similar to Monte-Carlo Null-Hypothesis Testing approach introduced by Shennan et al (2013) and implemented in _rcarbon_'s `modelTest()` function, and it is effectively a form of posterior predictive check. The `postPredSPD()` function in _nimbleCarbon_ can be used to generate observed and an ensemble of fitted SPDs using the posterior samples obtained from `nimbleMCMC()`:
+The results indicate a stronger support for model 2 than model 1 in this case. While this provides a relative measure of the model's predictive performance we cannot tell whether it can comprehensively explain the observed temporal frequencies of radiocarbon dates. One way to evaluate the model performance in absolute terms is to generate SPDs from the fitted posterior models and visually compare this to the observed SPD. The approach is similar to Monte-Carlo Null-Hypothesis Testing approach introduced by Shennan et al (2013) and implemented in _rcarbon_'s `modelTest()` function, and it is effectively a form of posterior predictive check. The `postPredSPD()` function in _nimbleCarbon_ can be used to generate observed and an ensemble of fitted SPDs using the posterior samples obtained from `nimbleMCMC()`:
 
 ```{r posterior predictive check ex2,fig.width=6.5,fig.height=5}
 set.seed(123)
-pp.check.m2=postPredSPD(obs.CRA,errors = obs.Errors,calCurve = 'intcal20',model = dLogisticGrowth,a = 8000,b=4500,params=list(r=mcmc.samples.m2$samples$chain1[,'r'],k=mcmc.samples.m2$samples$chain1[,'k']),nsim = 100,ncores = 3,verbose=FALSE)
+pp.check.m2=postPredSPD(obs.CRA,errors = obs.Errors,calCurve = 'intcal20',model = dLogisticGrowth,a = 7500,b=4500,params=list(r=mcmc.samples.m2$samples$chain1[,'r'],k=mcmc.samples.m2$samples$chain1[,'k']),method='uncalsample',nsim = 100,ncores = 3,verbose=FALSE)
 plot(pp.check.m2)
 ```
 
-In this case, although the model (grey envelope) shows generally a good fit to the data, there are some intervals where the observed density of radiocarbon dates is lower (show in blue) or higher (shown in red) than the fitted model. 
+In this case, although the model (grey envelope) shows generally a good fit to the data, there are some intervals where the observed density of radiocarbon dates is lower (show in blue) or higher (shown in red) than the fitted model. It is worth noting, however, that the simulation envelope does not ensure that each individual SPDs obtained from the posterior has a good fit to the data. As an additional heuristic device the correlation between the observed SPD and the SPDs generated in the posterior predictive check can be measured. The `postPredCor()` can be used to extract the correlation coefficients from the output of `postPredSPD()` and the resulting distribution can then be examined:  
+
+```{r posterior predictive correlation, fig.width=6.5,fig.height=5}
+postHPDplot(postPredCor(pp.check.m2),xlab="Pearson's Correlation coefficient",ylab='Density',main='m2 goodness-of-fit',xlim=c(0,1))
+```
+
+In this case, the posterior SPD shows a fairly decent fit, with a relatively high range of correlation values. Notice, however, that even the SPD with the highest correlation coefficient (`r round( postPredCor(pp.check.m2)[which.max(postPredCor(pp.check.m2))],2)` in this case) has some discrepancies compared to the observed data due to a combination of sampling error and incorrect inference:
+
+```{r posterior predictive correlation line plot, fig.width=8.4,fig.height=4.5}
+plot(obs.spd,spdnormalised = TRUE)
+highest.cor.index = which.max(postPredCor(pp.check.m2))
+lines(7500:4500,pp.check.m2$simmatrix[,highest.cor.index],lty=2)
+legend('topleft',legend=c('observed SPD','Posterior Predictive SPD with the highest correlation'),col=c('lightgrey','black'),lwd=c(4,1),lty=c(1,2),bty='n')
+```
 
 # Example 3: Phase Models
 
@@ -509,7 +522,7 @@ Bronk-Ramsey, C. (1995). Radiocarbon Calibration and Analysis of Stratigraphy: T
 
 Buck, C. E., Litton, C. D., & Smith, A. F. M. (1992). Calibration of radiocarbon results pertaining to related archaeological events. Journal of Archaeological Science, 19(5), 497–512. https://doi.org/10.1016/0305-4403(92)90025-X
 
-Crema, E. R., & Bevan, A. (2020). Inference from large sets of radiocarbon dates: software and methods. Radiocarbon, 1–17. https://doi.org/10.1017/RDC.2020.95
+Crema, E. R., & Bevan, A. (2021). Inference from large sets of radiocarbon dates: software and methods. Radiocarbon,63(1), 23-39. https://doi.org/10.1017/RDC.2020.95
 
 Gelman, A., & Rubin, D. B. (1992). Inference from Iterative Simulation Using Multiple Sequences. Statistical Science, 7(4), 457–472. https://www.jstor.org/stable/2246093. Accessed 12 January 2021
 
