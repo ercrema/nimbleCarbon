@@ -1,8 +1,7 @@
 Package: nimbleCarbon
 Title: Models and Utility Functions for Bayesian Analyses of Radiocarbon Dates with NIMBLE
 Version: 0.1.0
-Authors@R: c(person("Enrico","Crema",role=c("aut","cre"),email=c("enrico.crema@gmail.com"),comment=c(ORCID="0000-0001-6727-5138")),
-person("Robert","Di Napoli",role=c("ctb"),email=c("dinapoli@binghamton.edu"),comment=c(ORCID="0000-0003-2180-2195")))
+Authors@R: c(person("Enrico","Crema",role=c("aut","cre"),email=c("enrico.crema@gmail.com"),comment=c(ORCID="0000-0001-6727-5138")),person("Robert","Di Napoli",role=c("ctb"),email=c("dinapoli@binghamton.edu"),comment=c(ORCID="0000-0003-2180-2195")))
 Description: To be written.  
 Depends: R (>= 3.5.0), nimble, rcarbon
 Suggests: spelling, knitr
