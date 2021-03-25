@@ -13,8 +13,9 @@ postPredSPD(
   b,
   params,
   nsim,
-  method = "uncalsample",
+  method = NULL,
   spdnormalised = TRUE,
+  datenormalised = TRUE,
   ncores = 1,
   verbose = TRUE
 )
@@ -36,9 +37,11 @@ postPredSPD(
 
 \item{nsim}{Number of SPDs to be generated.  Default is the length of the parameter vectors supplied in the argument \code{params}.}
 
-\item{method}{Method for the creation of random dates from the fitted model. Either 'uncalsample' or 'calsample'. Default is 'calsample'.}
+\item{method}{Method for the creation of random dates from the fitted model. Either 'uncalsample' or 'calsample'.}
 
 \item{spdnormalised}{A logical variable indicating whether the total probability mass of the SPD is normalised to sum to unity for both observed and simulated data. Default is TRUE.}
+
+\item{datenormalised}{A logical variable indicating whether dates should be normalised to sum to unity or not. Default is TRUE.}
 
 \item{ncores}{Number of cores used for for parallel execution. Default is 1.}
 

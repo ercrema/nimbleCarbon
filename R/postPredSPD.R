@@ -12,6 +12,7 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c("i"))
 #' @param params List of vectors containing model parameters. The names attribute of each vector should match growth model parameters.
 #' @param nsim Number of SPDs to be generated.  Default is the length of the parameter vectors supplied in the argument \code{params}.
 #' @param method Method for the creation of random dates from the fitted model. Either 'uncalsample' or 'calsample'.
+#' @param datenormalised A logical variable indicating whether dates should be normalised to sum to unity or not. Default is TRUE.
 #' @param spdnormalised A logical variable indicating whether the total probability mass of the SPD is normalised to sum to unity for both observed and simulated data. Default is TRUE.
 #' @param ncores Number of cores used for for parallel execution. Default is 1.
 #' @param verbose A logical variable indicating whether extra information on progress should be reported. Default is TRUE.
@@ -28,7 +29,7 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c("i"))
 #' @import rcarbon
 #' @export 
 
-postPredSPD = function(x,errors,calCurve,model,a,b,params,nsim,method=NULL,spdnormalised=TRUE,ncores=1,verbose=TRUE)
+postPredSPD = function(x,errors,calCurve,model,a,b,params,nsim,method=NULL,spdnormalised=TRUE,datenormalised=TRUE,ncores=1,verbose=TRUE)
 {
   #Sanity checks ####
   if (length(unique(unlist(lapply(params,length))))>1)
@@ -64,7 +65,7 @@ postPredSPD = function(x,errors,calCurve,model,a,b,params,nsim,method=NULL,spdno
   
   #Calibrate Observed Data and Generate SPD ####
   if(verbose){'Generate observed SPD'}
-  calibrated.dates=calibrate(x,errors,calCurves = calCurve,verbose=verbose)
+  calibrated.dates=calibrate(x,errors,calCurves = calCurve,verbose=verbose, normalised=datenormalised)
   obs.spd = spd(calibrated.dates,timeRange=c(a,b),spdnormalised = spdnormalised,verbose=verbose)
 
   
@@ -111,7 +112,7 @@ postPredSPD = function(x,errors,calCurve,model,a,b,params,nsim,method=NULL,spdno
     }
     
     #Calibrate
-    x.tmp.calibrated = calibrate(x.tmp,errors = sample(errors,size=ndates,replace=TRUE),calCurves = calCurve, verbose=FALSE)
+    x.tmp.calibrated = calibrate(x.tmp,errors = sample(errors,size=ndates,replace=TRUE),calCurves = calCurve, normalised=datenormalised, verbose=FALSE)
     
     #Make SPD
     x.tmp.spd = spd(x.tmp.calibrated,timeRange = c(a,b),spdnormalised = spdnormalised,verbose=FALSE)
