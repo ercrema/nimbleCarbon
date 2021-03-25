@@ -5,18 +5,20 @@
 #' @param a lower (earliest) limit of the distribution (in BP).
 #' @param b upper (latest) limit of the distribution (in BP).
 #' @param params List of vectors containing model parameters. The names attribute of each vector should match growth model parameters.
-#' @param type Either a 'spaghetti' plot or a quantile based envelope plot. Default is 'spaghetti'.
+#' @param type Either a 'spaghetti' plot or a quantile based 'envelope' plot. Default is 'spaghetti'.
 #' @param nsample Number of samples to be used. Default is the length of the parameter vectors supplied in the argument \code{params}.
 #' @param interval Quantile interval used for the envelope plot. Ignored when type is set to 'spaghetti'.
 #' @param calendar  Either \code{'BP'} or \code{'BCAD'}. Indicate whether the calibrated date should be displayed in BP or BC/AD. Default is  \code{'BP'}.
+#' @param col Fill color for the quantile envelope (when \code{type=='envelope'}) or line colour (when \code{type=='spaghetti'}).
 #' @param alpha Transparency value for each line in the spaghetti plot. Ignored when type is set to 'envelope'.
 #' @param ylim the y limits of the plot.
+#' @param add Whether or not the new graphic should be added to an existing plot. 
 #' @param ... Additional arguments affecting the plot
 #' @examples
 #' params = list(k=runif(100,0.01,0.02),r=runif(100,0.003,0.004))
 #' modelPlot(model=dLogisticGrowth,a=5000,b=2000,params=params,type=c('spaghetti'))
 #' @export 
-modelPlot = function(model,a,b,params,type=c('spaghetti'),nsample=NULL,interval=0.9,calendar='BP',alpha=0.1,ylim=NULL,...)
+modelPlot = function(model,a,b,params,type=c('spaghetti'),nsample=NULL,interval=0.9,calendar='BP',col='lightgrey',alpha=0.1,ylim=NULL,add=FALSE,...)
 {
   #Check length parameters
   if (length(unique(unlist(lapply(params,length))))>1)
@@ -56,16 +58,16 @@ modelPlot = function(model,a,b,params,type=c('spaghetti'),nsample=NULL,interval=
     hi=apply(mat,1,quantile,prob=1-(1-interval)/2)
     median = apply(mat,1,median)
     if (is.null(ylim)){ylim=c(0,max(hi))}
-    plot(plotyears, median, xlim=xlim, ylim=ylim, type="n", col="white", ylab='Probability', xlab=xlabel, xaxt="n",...)
-    polygon(c(plotyears,rev(plotyears)),c(lo,rev(hi)),col='lightgrey',border=NA)
+    if(!add){plot(plotyears, median, xlim=xlim, ylim=ylim, type="n", col="white", ylab='Probability', xlab=xlabel, xaxt="n",...)}
+    polygon(c(plotyears,rev(plotyears)),c(lo,rev(hi)),col=col,border=NA)
     lines(plotyears, median,lwd=2)
   }
   
   if (type=='spaghetti')
   {
     if (is.null(ylim)){ylim=c(0,max(mat))}
-    plot(0, 0, xlim=xlim, ylim=ylim, type="n", col="white", ylab='Probability', xlab=xlabel, xaxt="n",...)
-    apply(mat,2,lines,x=plotyears,col=rgb(0,0,0,alpha))
+    if(!add){plot(0, 0, xlim=xlim, ylim=ylim, type="n", col="white", ylab='Probability', xlab=xlabel, xaxt="n",...)}
+    apply(mat,2,lines,x=plotyears,col=rgb(col2rgb(col)[1]/255,col2rgb(col)[2]/255,col2rgb(col)[3]/255,alpha))
   }
   
   if (calendar=="BP"){

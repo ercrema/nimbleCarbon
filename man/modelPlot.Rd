@@ -13,8 +13,10 @@ modelPlot(
   nsample = NULL,
   interval = 0.9,
   calendar = "BP",
+  col = "lightgrey",
   alpha = 0.1,
   ylim = NULL,
+  add = FALSE,
   ...
 )
 }
@@ -27,7 +29,7 @@ modelPlot(
 
 \item{params}{List of vectors containing model parameters. The names attribute of each vector should match growth model parameters.}
 
-\item{type}{Either a 'spaghetti' plot or a quantile based envelope plot. Default is 'spaghetti'.}
+\item{type}{Either a 'spaghetti' plot or a quantile based 'envelope' plot. Default is 'spaghetti'.}
 
 \item{nsample}{Number of samples to be used. Default is the length of the parameter vectors supplied in the argument \code{params}.}
 
@@ -35,9 +37,13 @@ modelPlot(
 
 \item{calendar}{Either \code{'BP'} or \code{'BCAD'}. Indicate whether the calibrated date should be displayed in BP or BC/AD. Default is  \code{'BP'}.}
 
+\item{col}{Fill color for the quantile envelope (when \code{type=='envelope'}) or line colour (when \code{type=='spaghetti'}).}
+
 \item{alpha}{Transparency value for each line in the spaghetti plot. Ignored when type is set to 'envelope'.}
 
 \item{ylim}{the y limits of the plot.}
+
+\item{add}{Whether or not the new graphic should be added to an existing plot.}
 
 \item{...}{Additional arguments affecting the plot}
 }
