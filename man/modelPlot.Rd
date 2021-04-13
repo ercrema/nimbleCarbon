@@ -51,6 +51,8 @@ modelPlot(
 Plot growth models based on user provided parameters for prior and posterior predictive checks.
 }
 \examples{
+\dontrun{
 params = list(k=runif(100,0.01,0.02),r=runif(100,0.003,0.004))
 modelPlot(model=dLogisticGrowth,a=5000,b=2000,params=params,type=c('spaghetti'))
+}
 }

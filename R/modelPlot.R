@@ -15,8 +15,10 @@
 #' @param add Whether or not the new graphic should be added to an existing plot. 
 #' @param ... Additional arguments affecting the plot
 #' @examples
+#' \dontrun{
 #' params = list(k=runif(100,0.01,0.02),r=runif(100,0.003,0.004))
 #' modelPlot(model=dLogisticGrowth,a=5000,b=2000,params=params,type=c('spaghetti'))
+#' }
 #' @export 
 modelPlot = function(model,a,b,params,type=c('spaghetti'),nsample=NULL,interval=0.9,calendar='BP',col='lightgrey',alpha=0.1,ylim=NULL,add=FALSE,...)
 {
