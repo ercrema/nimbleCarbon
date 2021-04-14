@@ -27,5 +27,5 @@ import(nimble)
 import(rcarbon)
 import(snow)
 import(utils)
-importFrom("stats", "density", "quantile")
+importFrom("stats", "density", "quantile","cor")
 
