@@ -1,5 +1,5 @@
 ---
-title: "Fitting and Comparing Growth Models with NimbleCarbon"
+title: "An Introduction to NimbleCarbon"
 author: "Enrico Crema"
 date: "`r Sys.Date()`"
 output:
@@ -10,7 +10,7 @@ output:
 fontsize: 11pt
 documentclass: article
 vignette: >
-  %\VignetteIndexEntry{Fitting and Comparing Growth Models with NimbleCarbon}
+  %\VignetteIndexEntry{An Introduction to NimbleCarbon}
   %\VignetteEngine{knitr::rmarkdown_notangle}
 ---
 
@@ -25,11 +25,11 @@ knitr::opts_chunk$set(fig.align = "center", eval = !is_check)
 
 # Introduction
 
-The _nimbleCarbon_ package provides a suite of bespoke functions and statistical distribution for using NIMBLE models to fit and compare population growth models based on temporal frequencies of radiocarbon dates. [Nimble](https://cran.r-project.org/package=nimble) is an R package that provides a system for  for writing Bayesian statistical model using an extensible dialect of the BUGS model language and compiler that generates C++ programs for improved performance.  This document will provide a quick guide and users are strongly advised to visit Nimble's [website](https://r-nimble.org/) for further information.  
+The _nimbleCarbon_ package provides a suite of custom functions and statistical distribution for using the NIMBLE framework to fit and compare population growth models based on temporal frequencies of radiocarbon dates. [NIMBLE](https://cran.r-project.org/package=nimble) is an R package that provides a system for writing Bayesian statistical models using an extensible dialect of the BUGS model language and a compiler that generates C++ programs for improved performance and customisation.  This document provides a short guide tailored to Bayesian radiocarbon analyses via _nimbleCarbon_. For a general introduction to the NIMBLE framework readers are strongly advised to read tutorials and manuals which can be found on NIMBLE's [official website](https://r-nimble.org/). 
 
 ## Installing and loading the _nimbleCarbon_ package
 
-The _nimbleCarbon_ package is still experimental and can be installed only via GitHub using the [devtools](https://cran.r-project.org/package=devtools) package:
+Stable versions of the _nimbleCarbon_ package can be installed from CRAN (with the command `install.packages('nimbleCarbon')`), whilst the latest development version can be obtained from GitHub using the [devtools](https://cran.r-project.org/package=devtools) package:
 
 ```{r installing nimbleCarbon,eval=FALSE,message=FALSE,warning=FALSE}
 library(devtools)
@@ -44,28 +44,28 @@ library(nimbleCarbon)
 
 # Example 1: Exponential Growth Model
 
-To illustrate a typical work-flow for fitting growth models with _nimbleCarbon_ we consider a hypothetical scenario where the target population grew with an exponential rate. More formally, we assume that the population size $N_t$ at time $t$ is given by the following equation:
+To illustrate a typical work-flow for fitting population growth models with _nimbleCarbon_ we consider a hypothetical scenario where the target population grew with an exponential rate. More formally, we assume that the population size $N_t$ at time $t$ is given by the following equation:
 
 $$N_t = N_0(1+r)^t$$
 
-where $N_0$ is the initial population size at time $t=0$ and $r$ is the growth rate. The assumption of the so-called _dates as data_ approach (Rick 1987) is that the probability of $\pi_t$ of observing a $^14$C date at time $t$ is proportional to $N_t$. It follows that that given a temporal window consisting of $T$ years, $\pi_t$ can be described by the following equation:
+where $N_0$ is the initial population size at time $t=0$ and $r$ is the growth rate. The assumption of the so-called _dates as data_ approach (Rick 1987) is that the probability of $\pi_t$ of observing a $^14$C date at time $t$ is proportional to $N_t$. It follows that that given a temporal window consisting of $T$ years, $\pi_t$ can be computed using the following equation:
 
 $$ \pi_t = \frac{N_0(1+r)^t}{\sum_{t=1}^TN_0(1+r)^t}$$
-and because $N_0$ is a constant and does not affect the estimate of $\pi_t$, we can further simplify the model by setting $N_0$ to 1. In order to take into account calibration effects we also need to define the specific calendar year of the index $t$. Thus the equation can be further as follows:
+and because $N_0$ is a constant and does not affect the shape of the population curve (and hence the estimate of $\pi_t$), we can further simplify the equation by setting $N_0$ to 1. Finally, because we have to account for calibration effects we need to use index values that refer to in absolute calendar dates in BP rather than the number of years from a $t=0$. Once we incorporate these two factors, our equations becomes:
 
 $$ \pi_{a-t} =  \frac{(1+r)^t}{\sum_{t=0}^{a-b}(1+r)^t}$$
-where $a$ and $b$ are the calendar years defining the start and the end of the time window of analysis. Thus, for example, if we set $a=6000$, $b=4000$ and $r=0.001$ we can obtain a vector of probabilities as follows:
+where $a$ and $b$ are the calendar years in BP defining the start and the end of the time window of analysis. We can plug this equation in R and obtain a vector of probabilities for each calendar year between $a$ and $b$. For example, given $a=6500$, $b=4500$ and $r=0.002$ we would have:
 
 ```{r exponential model,fig.width=5.5,fig.height=5}
 a = 6500
 b = 4500
-r = 0.001
+r = 0.002
 t = 0:(a-b)
 pi = ((1+r)^t)/(sum((1+r)^t))
 plot(a-t,pi,xlim=c(a,b),type='l',xlab='Cal BP',ylab='Probability Mass',ylim=c(0,max(pi)))
 ```
 
-We can use the vector `pi` to generate sample calendar dates and then back-calibrate this to $^14$ C age. The example below is a hypothetical dataset consisting of 300 radiocarbon dates, each associated with an error of 20 years:
+Now let's use the vector `pi` to generate a simulated radiocarbon data-set. This would require us to first sample calendar dates from our distribution, then back-calibrate them to $^{14}$C ages and assign a measurement error to each. The example below does this with 300 dates, each associated with an error of 20 years:
 
 ```{r generate samples from exponential model}
 set.seed(123)
@@ -75,9 +75,27 @@ cra = round(uncalibrate(calendar.dates)$ccCRA) #back-calibrate in 14C ages
 cra.error = rep(20,n) #assign error of 20 years
 ```
 
-Typically, these calendar dates are calibrated and their probabilities aggregated to generate summed probability distributions (SPD). Estimates of growth rates are then obtained by fitting a regression model where the response variable is the vector of summed probabilities and the independent variable their corresponding calendar age. Such approach, however, does not take into account sampling error nor the impact of the calibration process. As a result estimates can be biased, they do not provide reliable measures of uncertainty, and the computed likelihood (and consequently derived measures such as AIC) are incorrect. Timpson et al (2021) have recently overcome this problem by using likelihood estimates of a given growth model as a generalized Bernoulli distribution where the probability vector for each discrete calendar year is derived by some some growth model such as the exponential model described above. This effectively makes the inferential process of population growth rates akin to those more commonly employed for the Bayesian analyses of archaeological phases (Buck et al 1992) in software packages such as [OxCal](https://c14.arch.ox.ac.uk/oxcal.html) and [BCal](https://bcal.shef.ac.uk/). The key difference is that in this context time is treated as discrete so that the likelihood function for any growth models can be regarded as a special case of a generalized Bernoulli distribution (also known as categorical distribution). We can thus define a bounded growth model a categorical distribution where the probabilities $\pi_{a-1},\pi_{a-2},...,\pi_{a-b+1}$ for each calendar year $a-t$ is defined by a function with a set a growth parameters and the boundary parameters $a$ and $b$ defining the start and the end of the window of analysis in cal BP.  
+Typically, these calendar dates are calibrated and their probabilities aggregated to generate summed probability distributions (SPD). Estimates of growth rates are then obtained by fitting a regression model where the response variable is the vector of summed probabilities and the independent variable their corresponding calendar age: 
 
-In order to carry out a Bayesian analysis of our simulated data using _Nimble_ we need to first define a BUGS model using the `nimbleCode()` function:
+```{r spd based regression}
+calibrated.dates = calibrate(cra,cra.error,verbose=FALSE)
+summed.prob = spd(calibrated.dates,timeRange=c(6500,4500),verbose = FALSE)
+summed.prob.grid = summed.prob$grid
+fit <- nls(PrDens ~ exp(a + b * calBP), data = summed.prob.grid, start = list(a = 0, b = 0)) 
+-coefficients(fit)[2] #Estimated growth
+-confint(fit,level=0.95)[2,] #95% CI 
+# Note: estimates are negative because dates are in BP
+```
+
+However, such an approach can yield biased estimates. In the example above, the regression model suggests a growth rate of 0.00153 with a fairly narrow 95% confidence interval between 0.00148 and 0.00157 that does not include the true rate of `r` (see also Carleton and Groucutt 2021 for a similar analysis). Moreover, because sampling error are not accounted for, standard errors do not provide reliable measures of uncertainty, and likelihood estimates (and derived measures such as AIC) are incorrect. 
+
+A better way to conceptualise the problem and to obtain unbiased estimates of $r$ is to consider the calendar date associated to each $^{14}$C sample to be a random draw from a probability distribution. In this case, this is indeed the the generative process used above to create our artificial dataset, but the core principles can be extended to any observed data and their underlying unknown probability distributions. However, such an approach would require the calculation of the likelihood which can be difficult if not impossible in many situations. Timpson et al (2021) have recently overcome this problem by conceptualising proposed models as probability mass functions rather than probability density functions. In other words, the insight is to treat time as discrete units so that the computation of the likelihood becomes straightforward. In practical terms any probability distribution representing a population growth can be translated into a generalized Bernoulli distribution where each discrete calendar year is assigned to a probability. This framing of the problem effectively allows for an inferential process similar to those employed in the Bayesian analyses of archaeological phases (Buck et al 1992) which are made available in dedicated software packages such as [OxCal](https://c14.arch.ox.ac.uk/oxcal.html) and [BCal](https://bcal.shef.ac.uk/). 
+
+The _nimbleCarbon_ package provides a library of probability distributions for analysing frequency distribution of radiocarbon. These are generalized Bernoulli distribution where the probabilities $\pi_{a-1},\pi_{a-2},...,\pi_{a-b+1}$ for each calendar year $a-t$ (in BP) are defined by a series of parameters that capture the demographic trajectories (i.e. the 'shape' of the probability distribution) within a temporal window of analyses defined by boundary parameters $a$ and $b$. Thus for example, the custom nimble distribution model `dExponentialGrowth` can portray our exponential growth using the parameters $a$, $b$, and $r$ and estimate the likelihood for any observed calendar date.
+
+## Bayesian Inference
+
+Now let's analyse our simulated radiocarbon dates by fitting the `dExponentialGrowth` model and estimating the population growth rate $r$ (we will treat our boundary parameters $a$ and $b$ as constant user-defined window of anaylysis). The core pipeline required for our Bayesian analyses starts with the definition of our hierarchical model via the `nimbleCode()` function:
 
 ```{r exponential nimbleCode}
 model <- nimbleCode({
@@ -87,44 +105,45 @@ model <- nimbleCode({
         # Calibration
         mu[i] <- interpLin(z=theta[i], x=calBP[], y=C14BP[]);
         sigmaCurve[i] <- interpLin(z=theta[i], x=calBP[], y=C14err[]);
+        # Measurement Error
         sd[i] <- (sigma[i]^2+sigmaCurve[i]^2)^(1/2);
         X[i] ~ dnorm(mean=mu[i],sd=sd[i]);
       }
       # Prior
-      r ~ dexp(1/0.004); # Prior
+      r ~ dexp(1/0.0004); # Prior
     })  
 ```
 
-The syntax of the BUGS model typically include three main elements. The first one consist of a growth model (in this case `dExponentialGrowth()`) which defines the likelihood of observing a given calendar date (`theta`) within the time range of analysis defined by the parameters `a` and `b`, and in this case by the growth rate `r`. The second block effectively consists of calibrating `theta`, taking account for the Gaussian measurement error. For most applications this section can be copied and pasted as it is. Finally the third block defines the prior probability of our parameters --- in this case an exponential with a rate of 1/0.004, where 0.004 is the average growth rate observed in several prehistoric populations (see Zahid et al 2016). 
+When carrying a Bayesian analyses of radiocarbon dates the contents required for `nimbleCode()` typically include four main elements. The first consist of a probability distribution (in this case `dExponentialGrowth()`) which defines the likelihood of observing a given calendar date (`theta`). The second and the third block translates such date into $^{14}$C Age and models its relationship to the observed data whilst accounting for measurement error of the calibration curve and the sample. For most applications these twos sections can be copied and pasted with no modifications. The final block defines the prior probability of our parameters --- in this case we assign to $r$ a weakly informative exponential prior with a rate of 1/0.0004 (thus a mean of 0.0004), based on the average growth rate observed in several prehistoric populations (see Zahid et al 2016). 
 
-Next we define our constants and the data to be fitted. The constants would include the sample size, the values associated with the calibration curve, and any other fixed parameters (in this case `start` and `end`):
+Next we define our constants and the data to be fitted. The constants will include the sample size, the calibration curve, and any other fixed parameters (in this case `start` and `end`, i.e. the window of analysis):
 
 ```{r constraints ex1}
 data("intcal20") #load the IntCal20 calibration curve, Remier et al 2020
 constants <- list(N=n,calBP=intcal20$CalBP,C14BP=intcal20$C14Age,C14err=intcal20$C14Age.sigma,start=a,end=b)
 ```
 
-We then define our input data:
+We then define our input data (i.e. the $^{14}$C ages and their associated measurement errors):
 
 ```{r data ex1}
 data <- list(X=cra,sigma=cra.error)
 ```
 
-We are now ready to compile and run our model. The nimble package offer different options and degrees of customisation. The quickest approach consist of using the `nimbleMCMC()` function, which requires various MCMC parameters such as the number of chains and iterations and some sensible initial values. Initial values can be fixed:
+And finally provide a list of sensible initial parameter values to be used in the MCMC. These can be fixed: 
 
 ```{r ini ex1}
-m.dates = medCal(calibrate(cra,cra.error,verbose = FALSE))
+m.dates = medCal(calibrate(cra,cra.error,verbose = FALSE)) #compute the median calibrated for an initial estimate of theta
 if(any(m.dates>a|m.dates<b)){m.dates[m.dates>a]=a;m.dates[m.dates<b]=b} #ensure that theta is within the time range of analysis
 inits <- list(r=0.0004,theta=m.dates)
 ```
 
-or alternatively when running multiple chains can be defined as series of functions or a mixture of functions and fixed values:
+or can be defined as series of functions generating random values (in this case from the prior) or a mixture of functions and fixed values:
 
 ```{r ini function ex1}
 inits.function = function() list(r=rexp(1,1/0.0004),theta=m.dates)
 ```
 
-The example below consists of 10,000 iterations over 2 chains with a burn-in of 2000 steps^[This took approximately 20 minutes on a i7-7560U linux machine with 16G of RAM]:
+We are now ready to compile and run our model. The nimble package offer different options and degrees of customisation (see Nimble's manual for details), but the quickest approach is using the `nimbleMCMC()` function, which requires various MCMC settings. The example below uses 10,000 iterations over 2 chains with a burn-in of 2000 steps^[This took approximately 20 minutes on a i7-7560U linux machine with 16G of RAM]:
 
 ```{r mcmc samples ex1,results='hide',message=FALSE,warning=FALSE}
 mcmc.samples<- nimbleMCMC(code = model,constants = constants,data = data,niter = 10000, nchains = 2, thin=1, nburnin = 2000, progressBar = FALSE, monitors=c('r','theta'), inits=inits.function, samplesAsCodaMCMC=TRUE,setSeed=c(123,456))
@@ -132,7 +151,7 @@ mcmc.samples<- nimbleMCMC(code = model,constants = constants,data = data,niter =
 
 ### Running Chains in Parallel
 
-The `nimbleMCMC()` does not run MCMC in parallel chains across different cores. However, it is possible to write a pipeline to achieve this by making use of the `parallel` package. The script below has been adapted from the [tutorial provided on the nimble website](The [nimble website provides a useful tutorial for this](https://r-nimble.org/nimbleExamples/parallelizing_NIMBLE.html) and generates the same output as the MCMC above.
+The `nimbleMCMC()` does not run MCMC in parallel chains across different cores. However, it is possible to write a pipeline to achieve this by making use of the `parallel` package. The script below has been adapted from the [tutorial provided on the nimble website](https://r-nimble.org/nimbleExamples/parallelizing_NIMBLE.html) and generates the same output as the MCMC above.
 
 ```{r, mcmc in parallel, results='hide',message=FALSE,warning=FALSE,eval=FALSE}
 # Setup parallel processing:
@@ -153,7 +172,7 @@ runFun <- function(seed, data, constants, m.dates) {
       sd[i] <- (sigma[i]^2+sigmaCurve[i]^2)^(1/2);
       X[i] ~ dnorm(mean=mu[i],sd=sd[i]);
     }
-    r ~ dexp(1/0.004); 
+    r ~ dexp(1/0.0004); 
   })  
     results<- nimbleMCMC(code = model,constants = constants,data = data,niter = 10000, nchains = 1, thin=1, nburnin = 2000, progressBar = FALSE, monitors=c('r','theta'), inits=inits.function, samplesAsCodaMCMC=TRUE,setSeed=seed)
   
@@ -171,7 +190,7 @@ chain_output=coda::mcmc.list(chain_output)
 
 ## Diagnostics and Posterior Distributions
 
-The argument `samplesAsCodaMCMC` in `nimbleMCMC()` ensures that the output is stored as a `mcmc` class object of the [coda](https://cran.r-project.org/package=coda) package, which offers a wide range of MCMC diagnostics. First, trace plots of the posterior samples can be plotted using the standard `plot()` function in R as shown in the example below:
+The argument `samplesAsCodaMCMC` in `nimbleMCMC()` ensures that the output is stored as an `mcmc` class object of the [coda](https://cran.r-project.org/package=coda) package, which offers a wide range of MCMC diagnostics. First, trace plots of the posterior samples can be plotted using the standard `plot()` function in R as shown in the example below:
 
 ```{r trace plot ex1, fig.height=6.5,fig.width=5.5}
 par(mfrow=c(2,1))
@@ -179,7 +198,7 @@ plot(as.numeric(mcmc.samples$chain1[,'r']),type='l',xlab='MCMC Iteration',ylab='
 plot(as.numeric(mcmc.samples$chain2[,'r']),type='l',xlab='MCMC Iteration',ylab='r',main='chain 2')
 ```
 
-If more than two chains are available, diagnostic metrics such as Gelman-Rubin convergence diagnostic ($\hat{R}$, Gelman and Rubin 1992) and MCMC effective sample sizes can be evaluated:
+If more than two chains are available, diagnostic metrics such as Gelman-Rubin convergence diagnostic ($\hat{R}$, Gelman and Rubin 1992) and effective sample sizes can be evaluated:
 
 ```{r diagnostic ex1}
 library(coda)
@@ -189,28 +208,33 @@ ess = effectiveSize(mcmc.samples)
 head(ess)
 ```
 
-In this case the key parameter $r$ has an $\hat{R}$ close to 1 and a fairly large reffective sample size indicating a good convergence. The `postHPDplot()` in the _nimbleCarbon_ package offers a convenient way to display marginal posterior distributions highlighting user-defined highest posterior density interval:
+In this case the key parameter $r$ has an $\hat{R}$ close to 1 and a fairly large effective sample size indicating a good mixing and convergence. 
+
+We are now ready to examine our posterior. The `postHPDplot()` in the _nimbleCarbon_ package offers a convenient way to display marginal posterior distributions highlighting user-defined highest posterior density interval:
 
 ```{r posterior ex1, fig.height=5,fig.width=5}
 postHPDplot(mcmc.samples$chain1[,'r'],rnd=5,xlab='r',ylab='Density',prob = 0.95)
+abline(v=r,lty=2)
+axis(3,at=r,label='True value of r')
 ```
 
-While the marginal posterior can provide direct insights on each parameter uncertainty, models with more than one parameters can be hard to interpret. The `modelPlot()` visualises the shape of growth models given a list of parameter combinations This can be used to carry out prior predictive checks (see left panel below) or to plot the fitted growth model incorporating the uncertainty of the parameters (right panel below).  
+In contrast to the regression based estimate used above, the 95% HPD provides a wider interval (properly accounting for sampling error) and includes the true growth rate used to generate the simulated data. 
+While marginal posteriors can provide direct insights on the estimates of each parameter value and their associated uncertainty, more complex models with additional parameters can be harder to interpret. The `modelPlot()` function help visualising the shape of growth models given a list of parameter combinations. This can be used to carry out prior predictive checks (see left panel below) or to plot the fitted growth model incorporating the uncertainty of the posterior parameters (right panel below).  
 
 ```{r, prior and posterior plot ex1, fig.width=7,fig.height=4}
 par(mfrow=c(1,2))
 set.seed(123)
-modelPlot(dExponentialGrowth,a=a,b=b,params=list(r=rexp(100,1/0.0004)),alpha = 0.1,ylim=c(0,0.003),main='Prior',type='spaghetti')
+modelPlot(dExponentialGrowth,a=a,b=b,params=list(r=rexp(100,1/0.0004)),alpha = 0.3,ylim=c(0,0.003),main='Prior',type='spaghetti',col='lightblue')
 lines(a:b,pi,col=2,lty=2,lwd=2)
-modelPlot(dExponentialGrowth,a=a,b=b,params=list(r=mcmc.samples$chain1[,'r']),nsample=100,alpha=0.1,ylim=c(0,0.003),main='Posterior',type='spaghetti')
-lines(a:b,pi,col=2,lty=2,lwd=2)
+modelPlot(dExponentialGrowth,a=a,b=b,params=list(r=mcmc.samples$chain1[,'r']),nsample=100,alpha=0.3,ylim=c(0,0.003),main='Posterior',type='spaghetti',col='lightblue')
+lines(a:b,pi,col=2,lty=2,lwd=2) #true data-generating model
 ```
 
 # Example 2: Logistic Growth and Model Comparison
 
 ## Data Preparation
 
-Now let's consider another growth model by examining an empirical case study. We will use a subset of the EUROEVOL dataset (Manning et al 2016) provided in the _rcarbon_ package (Crema and Bevan 2021), examining the radiocarbon record from Denmark:
+Now let's consider a real dataset and additional growth model. We will use a subset of radiocarbon dates from Denmark using the EUROEVOL dataset (Manning et al 2016) offered in the _rcarbon_ package (Crema and Bevan 2021):
 
 ```{r ex2 data prep 1}
 data(euroevol)
@@ -218,7 +242,7 @@ DK=subset(euroevol,Country=="Denmark") #subset of Danish dates
 DK.caldates=calibrate(x=DK$C14Age,errors=DK$C14SD,calCurves='intcal20',verbose=FALSE) #calibration
 ```
 
-In the case of SPD analysis a common practice for handling inter-site variation in sampling intensity consists of grouping dates that are close in time, aggregating their summed probabilities and normalise to sum to unity (see Timpson et al 2014, Crema and Bevan 2021 for details). This approach is not possible here, where we instead select a random date from each 'bin'. This can be achieved using the `binPrep()` ad `thinDates()` functions in _rcarbon_:
+It is common practice in the analyses of SPDs to handle potential biases arising from inter-site variation in sampling intensity by grouping dates from the same site that are close in time, summing their calibrated probabilities, and normalising the result to sum to unity (see Timpson et al 2014, Crema and Bevan 2021 for details). The resulting "bins" are then combined to generate SPDs and used as basic analytic units. This approach is not possible here, but we can achieve similar adjustment by selecting a random date from each bin using the `binPrep()` ad `thinDates()` functions in _rcarbon_:
 
 ```{r ex2 binning and thinning}
 # Generate bins grouping dates within 100 yrs
@@ -233,21 +257,21 @@ We will in this case examine the density of radiocarbon dates between 7500 and 4
 DK.caldates = subset(DK.caldates,BP<=7500&BP>=4500,p=0.5)
 ```
 
-Finally we extract the $^{14}$C ages and the associated errors from our subset
-
-```{r ex2 extracting cra and errors}
-obs.CRA = DK.caldates$metadata$CRA
-obs.Errors = DK.caldates$metadata$Error
-```
-
-and visualise the SPD distribution of the resulting subset using the `spd()` function in _rcarbon_
+The SPD of the resulting subset can be visualised using dedicated function in _rcarbon_:
 
 ```{r ex2 spd,fig.width=6,fig.height=5}
 obs.spd = spd(DK.caldates,timeRange=c(7500,4500),verbose=FALSE)
 plot(obs.spd)
 ```
 
-Finally, before defining our growth models we can set our input data and constants as we did earlier:
+Now let's extract the $^{14}$C ages and their associated errors from our subset
+
+```{r ex2 extracting cra and errors}
+obs.CRA = DK.caldates$metadata$CRA
+obs.Errors = DK.caldates$metadata$Error
+```
+
+and create lists of input data and constants for our Bayesian analysis. 
 
 ```{r ex2 constants and data}
 constants <- list(N=length(obs.CRA),calBP=intcal20$CalBP,C14BP=intcal20$C14Age,C14err=intcal20$C14Age.sigma,start=7500,end=4500)
@@ -256,21 +280,18 @@ data <- list(X=obs.CRA,sigma=obs.Errors)
 
 ## Growth Models
 
-We will consider an exponential and a logistic growth model. The former is the same as what we used earlier:
+We will consider an exponential and a logistic growth model. We have already created the former:
 
 ```{r ex2 exponential model}
 m1 <- nimbleCode({
       for (i in 1:N){
-        # Growth Model Likelihood
         theta[i] ~ dExponentialGrowth(a=start,b=end,r=r);
-        # Calibration
         mu[i] <- interpLin(z=theta[i], x=calBP[], y=C14BP[]);
         sigmaCurve[i] <- interpLin(z=theta[i], x=calBP[], y=C14err[]);
         sd[i] <- (sigma[i]^2+sigmaCurve[i]^2)^(1/2);
         X[i] ~ dnorm(mean=mu[i],sd=sd[i]);
       }
-      # Prior
-      r ~ dexp(1/0.004); # Prior
+      r ~ dexp(1/0.0004); 
     })  
 
 ```
@@ -283,7 +304,7 @@ where $k$ is size of the population at $t=0$, expressed as the proportion of the
 
 $$ N_{t} = \frac{K}{1+\frac{K-N_0}{N_0}e^{-rt}} $$
 
-where the carrying capacity $K$ is set to 1, and $N_0=k$. To make a `nimbleCode` of the logistic growth model we will use `dLogisticGrowth` which requires the boundary parameters `a` and `b`, the initial population size `k`, and the intrinsic growth rate `r`. Here we fix `a` and `b` to the boundary of our time-window, while and use an exponential prior for `k` and `r`. Notice that for the former we truncate between 0.001 and 0.2 using the `T()` syntax in _nimble_: 
+where the carrying capacity $K$ is set to 1, and $N_0=k$. To make a `nimbleCode` of the logistic growth model we will use `dLogisticGrowth` which requires the boundary parameters `a` and `b`, the initial population size `k`, and the intrinsic growth rate `r`. Here we fix `a` and `b` to the boundary of our time-window and use exponential priors for `k` and `r` (notice that we truncate the former between 0.001 and 0.2 using the `T()` function in _nimble_): 
 
 ```{r ex logistic model}
 m2 <- nimbleCode({
@@ -313,7 +334,7 @@ inits.function.m2 = function() list(r=rexp(1,1/0.0004),k=runif(1,0.0001,0.2),the
 
 ## MCMC, Diagnostic, Model Comparison, and Posterior Predictive Check
 
-We can now use the `nimbleMCMC()` function again, but this time we: 1) define the random seed using the `setSeed` argument to ensure full reproducibility; and 2) we set the argument `WAIC` to TRUE so the models can be compared using the Widely Applicable Information Criterion (Watanabe 2010, Gelman et al 2014) : 
+We can now use the `nimbleMCMC()` function again, but this time we: 1) define random seeds using the `setSeed` argument to ensure full reproducibility; and 2) we set the argument `WAIC` to TRUE so the models can be compared using the Widely Applicable Information Criterion (Watanabe 2010, Gelman et al 2014) : 
 
 ```{r ex2 mcmc,message=FALSE,warning=FALSE}
 mcmc.samples.m1<- nimbleMCMC(code = m1,constants = constants,data = data,niter = 15000, nchains = 2, thin=1, nburnin = 3000, progressBar = FALSE, monitors=c('r','theta'), inits=inits.function.m1, samplesAsCodaMCMC=TRUE,setSeed=c(123,456),WAIC=TRUE)
@@ -341,7 +362,7 @@ m1.ess[1]
 m2.ess[1:2]
 ```
 
-indicating that we can have reliable marginal posterior distributions of our two models 
+indicating that we can have reliable marginal posterior distributions: 
 
 ```{r ex2 marginal posteriors,fig.width=9,fig.height=3.5}
 par(mfrow=c(1,3))
@@ -350,7 +371,7 @@ postHPDplot(mcmc.samples.m2$samples$chain1[,'r'],rnd=5,xlab='r',ylab='Density',p
 postHPDplot(mcmc.samples.m2$samples$chain1[,'k'],rnd=5,xlab='k',ylab='Density',prob = 0.95,main='Model 2: k')
 ```
 
-as well as their shapes
+We can visually compare what these parameter combinations mean in terms of population dynamics using the `modelPlot()` function:
 
 ```{r posterior model plot ex2, fig.width=7,fig.height=4}
 params.m1 = list(r=c(mcmc.samples.m1$samples$chain1[,'r'],mcmc.samples.m1$samples$chain2[,'r']))
@@ -362,13 +383,13 @@ modelPlot(dExponentialGrowth,a=7500,b=4500,params=params.m1,nsample=100,alpha = 
 modelPlot(dLogisticGrowth,a=7500,b=4500,params=params.m2,nsample=100,alpha = 0.1,ylim=c(0,0.001),main='m2: Logistic',type='envelope')
 ```
 
-The shape of the fitted model have some differences so it is worth asking which model provides a better fit to the observed data. We can formally evaluate this question by comparing the WAIC values obtained from the `nimbleMCMC()` function. The _nimbleCarbon_ package provide a handy function for extracting these and computing $\Delta WAIC$ and WAIC weights:
+The two models have different shapes, so it is worth asking which provides a better fit to the observed data. We can formally evaluate this question by comparing the WAIC values obtained from the `nimbleMCMC()` function. The _nimbleCarbon_ package provide a handy function for extracting these and computing $\Delta WAIC$ and WAIC weights:
 
 ```{r model comparison ex2}
 compare.models(mcmc.samples.m1,mcmc.samples.m2)
 ```
 
-The results indicate a stronger support for model 2 than model 1 in this case. While this provides a relative measure of the model's predictive performance we cannot tell whether it can comprehensively explain the observed temporal frequencies of radiocarbon dates. One way to evaluate the model performance in absolute terms is to generate SPDs from the fitted posterior models and visually compare this to the observed SPD. The approach is similar to Monte-Carlo Null-Hypothesis Testing approach introduced by Shennan et al (2013) and implemented in _rcarbon_'s `modelTest()` function, and it is effectively a form of posterior predictive check. The `postPredSPD()` function in _nimbleCarbon_ can be used to generate observed and an ensemble of fitted SPDs using the posterior samples obtained from `nimbleMCMC()`:
+The results indicate a stronger support for model 2 than model 1. While this provides a relative measure of the model's predictive performance it cannot tell whether the best model can comprehensively explain the observed temporal frequencies of radiocarbon dates. One way to evaluate the model performance in absolute (rather than relative) terms is to generate SPDs from the fitted posterior models and visually compare this to the observed SPD. The approach is similar to Monte-Carlo Null-Hypothesis Testing approach introduced by Shennan et al (2013) and implemented in _rcarbon_'s `modelTest()` function, and it is effectively a form of posterior predictive check. The `postPredSPD()` function in _nimbleCarbon_ can be used to generate observed and an ensemble of fitted SPDs using the posterior samples obtained from `nimbleMCMC()`:
 
 ```{r posterior predictive check ex2,fig.width=6.5,fig.height=5}
 set.seed(123)
@@ -376,13 +397,13 @@ pp.check.m2=postPredSPD(obs.CRA,errors = obs.Errors,calCurve = 'intcal20',model 
 plot(pp.check.m2)
 ```
 
-In this case, although the model (grey envelope) shows generally a good fit to the data, there are some intervals where the observed density of radiocarbon dates is lower (show in blue) or higher (shown in red) than the fitted model. It is worth noting, however, that the simulation envelope does not ensure that each individual SPDs obtained from the posterior has a good fit to the data. As an additional heuristic device the correlation between the observed SPD and the SPDs generated in the posterior predictive check can be measured. The `postPredCor()` can be used to extract the correlation coefficients from the output of `postPredSPD()` and the resulting distribution can then be examined:  
+In this case, although the model (grey envelope) shows generally a good fit to the data, there are some intervals where the observed density of radiocarbon dates is lower (show in blue) or higher (shown in red) than the fitted model. It is worth noting, however, that the simulation envelope does not ensure that each individual SPDs obtained from the posterior has a good fit to the data. As an additional heuristic device the correlation between the observed SPD and the SPDs generated in the posterior predictive check can be measured. The `postPredCor()` function can be used to extract the correlation coefficients from the output of `postPredSPD()` and the resulting distribution can then be examined using the `postHPDplot()` function:  
 
 ```{r posterior predictive correlation, fig.width=6.5,fig.height=5}
 postHPDplot(postPredCor(pp.check.m2),xlab="Pearson's Correlation coefficient",ylab='Density',main='m2 goodness-of-fit',xlim=c(0,1))
 ```
 
-In this case, the posterior SPD shows a fairly decent fit, with a relatively high range of correlation values. Notice, however, that even the SPD with the highest correlation coefficient (`r round( postPredCor(pp.check.m2)[which.max(postPredCor(pp.check.m2))],2)` in this case) has some discrepancies compared to the observed data due to a combination of sampling error and incorrect inference:
+In this case, the posterior SPD shows a fairly decent fit, with a relatively high range of correlation values. Notice, however, that even the SPD with the highest correlation coefficient has some discrepancies compared to the observed data due to a combination of sampling error and incorrect inference:
 
 ```{r posterior predictive correlation line plot, fig.width=8.4,fig.height=4.5}
 plot(obs.spd,spdnormalised = TRUE)
@@ -393,7 +414,7 @@ legend('topleft',legend=c('observed SPD','Posterior Predictive SPD with the high
 
 # Example 3: Phase Models
 
-The _nimble_ framework can also be used for phase modelling where the objective is to identify boundary estimates for a group of dates. The example below illustrates this with a simulated dataset with a start date at 4500 cal BP and an end date at 3800 cal BP:
+The _nimble_ framework can also be used for archaeological phase modelling. The example below illustrates this with a simulated dataset with a start date at 4500 cal BP and an end date at 3800 cal BP:
 
 ```{r phase model,fig.width=7.5,fig.height=4.5,message=FALSE,warning=FALSE}
 # Simulate Observed Data
@@ -439,18 +460,18 @@ postHPDplot(mcmc.samples[,'alpha[1]'],xlim=c(3900,3700),xlab='Cal BP',ylab='Post
 abline(v=b,lty=2)
 ```
 
-While the model is able to correctly recover the true parameter values, it should be noted that for general purposes dedicated software packages such as [BCal](https://bcal.shef.ac.uk/) and [OxCal](https://c14.arch.ox.ac.uk/oxcal.html) are recommended, as they provide automatic tuning of MCMC settings as well as  prior definitions and can they can easily encode more complex models with multiple phases and constraints with a better performance. However, users interested in utilising specific probability distributions or bespoke constraints that cannot be straightforwardly defined with these software packages might consider using this package. The _nimbleCarbon_ package does also offer a function (`agreementIndex()`) for computing agreement indices (Bronk-Ramsey 1995) to determine model consistency. The function requires the observed CRA values and the posterior samples of each date obtained by `nimbleMCMC()`: 
+While the model is able to correctly recover the true parameter values, it should be noted that for general purposes dedicated software packages such as [BCal](https://bcal.shef.ac.uk/) and [OxCal](https://c14.arch.ox.ac.uk/oxcal.html) are recommended, as they provide automatic tuning of MCMC settings as well as  prior definitions and can they can easily encode more complex models with multiple phases and constraints. However, users interested in utilising custom probability distributions or more complex constraints that cannot be straightforwardly defined with these software packages might consider using _nimbleCarbon_. The package also provides a function for computing agreement indices (Bronk-Ramsey 1995) that are typically used in Bayesian phase analyses to determine model consistency. The function requires the observed CRA values and the posterior samples of each date obtained by `nimbleMCMC()`: 
 
-```{r}
-theta = mcmc.samples[,-c(1:2)] #Exclude columns containing the posterior samples otherthan those associated with each date 
+```{r agreement index nimbleCarbon}
+theta = mcmc.samples[,-c(1:2)] #Exclude columns containing the posterior samples other than those associated with each date 
 a=agreementIndex(cra,cra.error,calCurve='intcal20',theta=theta,verbose = F)
 head(a$agreement) #individual agreement indices
 a$overall.agreement #overall agreement index
 ```
 
-Although estimates provided by _nimbleCarbon_ are comparable to those computed by _OxCal_ (see below) it is worth bearing in mind that estimates are computed from the posterior samples, and as such good convergence and a larger number of samples would provide more reliable estimates. 
+Although estimates provided by _nimbleCarbon_ are comparable to those computed by _OxCal_ (see additional example below) it is worth bearing in mind that estimates are computed from the posterior samples, and as such good convergence and  larger number of samples would provide more reliable estimates. 
 
-```{r agreement index, fig.width=5.5,fig.height=5.5}
+```{r agreement index oxcal, fig.width=5.5,fig.height=5.5}
 #the oxcAAR package provides an R interface for OxCal
 library(oxcAAR) 
 quickSetupOxcal()
@@ -496,7 +517,7 @@ tmp=my_result_text[index]
 oxcal.aindex=unlist(lapply(strsplit(tmp,"[=,;]"),function(x){return(as.numeric(x[[2]]))}))
 
 
-### Fit Phase Model using Nimble
+### Fit Phase Model on the same sets of dates using nimbleCarbon:
 cra = c(4570,4455,4590,4540,4530,4595,4510,4557,4570,4580,4590,4560,4440,4470,4516,4522,4533,4590,4517)
 cra.error =c(30,35,40,40,40,26,30,25,30,50,50,40,40,40,29,27,28,30,20)
 n = length(cra)  
@@ -521,6 +542,8 @@ abline(a=0,b=1,lty=2)
 Bronk-Ramsey, C. (1995). Radiocarbon Calibration and Analysis of Stratigraphy: The OxCal Program. Radiocarbon, 37(2), 425–430. https://doi.org/10.1017/S0033822200030903
 
 Buck, C. E., Litton, C. D., & Smith, A. F. M. (1992). Calibration of radiocarbon results pertaining to related archaeological events. Journal of Archaeological Science, 19(5), 497–512. https://doi.org/10.1016/0305-4403(92)90025-X
+
+Carleton, W. C., & Groucutt, H. S. (2021). Sum things are not what they seem: Problems with point-wise interpretations and quantitative analyses of proxies based on aggregated radiocarbon dates. The Holocene, 31(4), 630–643. https://doi.org/10.1177/0959683620981700
 
 Crema, E. R., & Bevan, A. (2021). Inference from large sets of radiocarbon dates: software and methods. Radiocarbon,63(1), 23-39. https://doi.org/10.1017/RDC.2020.95
 
