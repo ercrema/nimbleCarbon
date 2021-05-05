@@ -25,7 +25,7 @@ knitr::opts_chunk$set(fig.align = "center", eval = !is_check)
 
 # Introduction
 
-The _nimbleCarbon_ package provides a suite of custom functions and statistical distribution for using the NIMBLE framework to fit and compare population growth models based on temporal frequencies of radiocarbon dates. [NIMBLE](https://cran.r-project.org/package=nimble) is an R package that provides a system for writing Bayesian statistical models using an extensible dialect of the BUGS model language and a compiler that generates C++ programs for improved performance and customisation.  This document provides a short guide tailored to Bayesian radiocarbon analyses via _nimbleCarbon_. For a general introduction to the NIMBLE framework readers are strongly advised to read tutorials and manuals which can be found on NIMBLE's [official website](https://r-nimble.org/). 
+The _nimbleCarbon_ package provides a suite of custom functions and statistical distribution for using the NIMBLE framework to fit and compare population growth models based on temporal frequencies of radiocarbon dates (Rick 1987, Williams 2012, Crema and Bevan 2021, etc.). [NIMBLE](https://cran.r-project.org/package=nimble) is an R package that provides a system for writing Bayesian statistical models using an extensible dialect of the BUGS modelling language and a compiler that generates C++ programs for improved performance and customisation.  This document provides a short guide tailored to Bayesian radiocarbon analyses via _nimbleCarbon_. For a general introduction to the NIMBLE framework users are strongly advised to read tutorials and manuals which can be found on NIMBLE's [official website](https://r-nimble.org/). 
 
 ## Installing and loading the _nimbleCarbon_ package
 
@@ -36,7 +36,7 @@ library(devtools)
 install_github('ercrema/nimbleCarbon')
 ```
 
-Once the installation is completed the package can be loaded using the `library()` command:
+Once the installation is completed, the package can be loaded using the `library()` command:
 
 ```{r loading nimbleCarbon}
 library(nimbleCarbon)
@@ -89,13 +89,13 @@ fit <- nls(PrDens ~ exp(a + b * calBP), data = summed.prob.grid, start = list(a 
 
 However, such an approach can yield biased estimates. In the example above, the regression model suggests a growth rate of 0.00153 with a fairly narrow 95% confidence interval between 0.00148 and 0.00157 that does not include the true rate of `r` (see also Carleton and Groucutt 2021 for a similar analysis). Moreover, because sampling error are not accounted for, standard errors do not provide reliable measures of uncertainty, and likelihood estimates (and derived measures such as AIC) are incorrect. 
 
-A better way to conceptualise the problem and to obtain unbiased estimates of $r$ is to consider the calendar date associated to each $^{14}$C sample to be a random draw from a probability distribution. In this case, this is indeed the the generative process used above to create our artificial dataset, but the core principles can be extended to any observed data and their underlying unknown probability distributions. However, such an approach would require the calculation of the likelihood which can be difficult if not impossible in many situations. Timpson et al (2021) have recently overcome this problem by conceptualising proposed models as probability mass functions rather than probability density functions. In other words, the insight is to treat time as discrete units so that the computation of the likelihood becomes straightforward. In practical terms any probability distribution representing a population growth can be translated into a generalized Bernoulli distribution where each discrete calendar year is assigned to a probability. This framing of the problem effectively allows for an inferential process similar to those employed in the Bayesian analyses of archaeological phases (Buck et al 1992) which are made available in dedicated software packages such as [OxCal](https://c14.arch.ox.ac.uk/oxcal.html) and [BCal](https://bcal.shef.ac.uk/). 
+A better way to conceptualise the problem and obtain unbiased estimates of $r$ is to consider the calendar date associated to each $^{14}$C sample to be a random draw from a probability distribution. In this case, the generative process becomes equivalent to the one used above to create our artificial dataset, and the core principles can be extended to any observed data and their underlying probability distributions. However, such an approach would require the calculation of the likelihood function which can be difficult if not impossible in many situations. Timpson et al (2021) have recently overcome this problem by conceptualising proposed models as probability mass functions rather than probability density functions. In other words, the insight is to treat time as discrete units so that the computation of the likelihood function becomes straightforward. In practical terms any probability distribution representing a population growth can be translated into a generalized Bernoulli distribution (i.e. a categorical distribution) where each discrete calendar year is assigned to a probability. This framing of the problem effectively allows for an inferential process similar to those employed in the Bayesian analyses of archaeological phases (Buck et al 1992) which are made available in dedicated software packages such as [OxCal](https://c14.arch.ox.ac.uk/oxcal.html) and [BCal](https://bcal.shef.ac.uk/). 
 
 The _nimbleCarbon_ package provides a library of probability distributions for analysing frequency distribution of radiocarbon. These are generalized Bernoulli distribution where the probabilities $\pi_{a-1},\pi_{a-2},...,\pi_{a-b+1}$ for each calendar year $a-t$ (in BP) are defined by a series of parameters that capture the demographic trajectories (i.e. the 'shape' of the probability distribution) within a temporal window of analyses defined by boundary parameters $a$ and $b$. Thus for example, the custom nimble distribution model `dExponentialGrowth` can portray our exponential growth using the parameters $a$, $b$, and $r$ and estimate the likelihood for any observed calendar date.
 
 ## Bayesian Inference
 
-Now let's analyse our simulated radiocarbon dates by fitting the `dExponentialGrowth` model and estimating the population growth rate $r$ (we will treat our boundary parameters $a$ and $b$ as constant user-defined window of anaylysis). The core pipeline required for our Bayesian analyses starts with the definition of our hierarchical model via the `nimbleCode()` function:
+Now let's analyse our simulated radiocarbon dataset by fitting the `dExponentialGrowth` model and estimating the population growth rate $r$ (we will treat our boundary parameters $a$ and $b$ as constant user-defined window of analysis). The core pipeline required for our analyses starts with the definition of our Bayesian hierarchical model via the `nimbleCode()` function:
 
 ```{r exponential nimbleCode}
 model <- nimbleCode({
@@ -234,7 +234,7 @@ lines(a:b,pi,col=2,lty=2,lwd=2) #true data-generating model
 
 ## Data Preparation
 
-Now let's consider a real dataset and additional growth model. We will use a subset of radiocarbon dates from Denmark using the EUROEVOL dataset (Manning et al 2016) offered in the _rcarbon_ package (Crema and Bevan 2021):
+Now let's consider a real dataset and an additional growth model. We will use a subset of radiocarbon dates from Denmark using the EUROEVOL dataset (Manning et al 2016) offered in the _rcarbon_ package (Crema and Bevan 2021):
 
 ```{r ex2 data prep 1}
 data(euroevol)
@@ -251,16 +251,16 @@ DK.bins = binPrep(sites=DK$SiteID,ages=DK$C14Age,h=100)
 DK.caldates = DK.caldates[thinDates(ages=DK$C14Age,  errors=DK$C14SD, bins=DK.bins, size=1, thresh=1,seed=123,method='splitsample')]
 ```
 
-We will in this case examine the density of radiocarbon dates between 7500 and 4500 cal BP. To obtain the relevant subset from `DK.caldates` we will use the `subset()` function, taking into consideration only samples with a cumulative probability equal or larger than 0.5 within the time window of analysis:
+We will in this case examine the density of radiocarbon dates between 7000 and 4500 cal BP. To obtain the relevant subset from `DK.caldates` we will use the `subset()` function, taking into consideration only samples with a cumulative probability equal or larger than 0.5 within the time window of analysis:
 
 ```{r ex2 subsetting}
-DK.caldates = subset(DK.caldates,BP<=7500&BP>=4500,p=0.5)
+DK.caldates = subset(DK.caldates,BP<=7000&BP>=4500,p=0.5)
 ```
 
 The SPD of the resulting subset can be visualised using dedicated function in _rcarbon_:
 
 ```{r ex2 spd,fig.width=6,fig.height=5}
-obs.spd = spd(DK.caldates,timeRange=c(7500,4500),verbose=FALSE)
+obs.spd = spd(DK.caldates,timeRange=c(7000,4500),verbose=FALSE)
 plot(obs.spd)
 ```
 
@@ -274,7 +274,7 @@ obs.Errors = DK.caldates$metadata$Error
 and create lists of input data and constants for our Bayesian analysis. 
 
 ```{r ex2 constants and data}
-constants <- list(N=length(obs.CRA),calBP=intcal20$CalBP,C14BP=intcal20$C14Age,C14err=intcal20$C14Age.sigma,start=7500,end=4500)
+constants <- list(N=length(obs.CRA),calBP=intcal20$CalBP,C14BP=intcal20$C14Age,C14err=intcal20$C14Age.sigma,start=7000,end=4500)
 data <- list(X=obs.CRA,sigma=obs.Errors)
 ```
 
@@ -327,7 +327,7 @@ We are now ready to define our initialisation functions for the two models so th
 
 ```{r ex2 init}
 m.dates = medCal(DK.caldates)
-if(any(m.dates>7500|m.dates<4500)){m.dates[m.dates>7500]=7500;m.dates[m.dates<4500]=4500}
+if(any(m.dates>7000|m.dates<4500)){m.dates[m.dates>7000]=7000;m.dates[m.dates<4500]=4500}
 inits.function.m1 = function() list(r=rexp(1,1/0.0004),theta=m.dates)
 inits.function.m2 = function() list(r=rexp(1,1/0.0004),k=runif(1,0.0001,0.2),theta=m.dates)
 ```
@@ -379,8 +379,8 @@ params.m2 = list(r=c(mcmc.samples.m2$samples$chain1[,'r'],mcmc.samples.m2$sample
 
 par(mfrow=c(1,2))
 set.seed(123)
-modelPlot(dExponentialGrowth,a=7500,b=4500,params=params.m1,nsample=100,alpha = 0.1,ylim=c(0,0.001),main='m1: Exponential',type='envelope')
-modelPlot(dLogisticGrowth,a=7500,b=4500,params=params.m2,nsample=100,alpha = 0.1,ylim=c(0,0.001),main='m2: Logistic',type='envelope')
+modelPlot(dExponentialGrowth,a=7000,b=4500,params=params.m1,nsample=100,alpha = 0.1,ylim=c(0,0.001),main='m1: Exponential',type='envelope')
+modelPlot(dLogisticGrowth,a=7000,b=4500,params=params.m2,nsample=100,alpha = 0.1,ylim=c(0,0.001),main='m2: Logistic',type='envelope')
 ```
 
 The two models have different shapes, so it is worth asking which provides a better fit to the observed data. We can formally evaluate this question by comparing the WAIC values obtained from the `nimbleMCMC()` function. The _nimbleCarbon_ package provide a handy function for extracting these and computing $\Delta WAIC$ and WAIC weights:
@@ -393,7 +393,7 @@ The results indicate a stronger support for model 2 than model 1. While this pro
 
 ```{r posterior predictive check ex2,fig.width=6.5,fig.height=5}
 set.seed(123)
-pp.check.m2=postPredSPD(obs.CRA,errors = obs.Errors,calCurve = 'intcal20',model = dLogisticGrowth,a = 7500,b=4500,params=list(r=mcmc.samples.m2$samples$chain1[,'r'],k=mcmc.samples.m2$samples$chain1[,'k']),method='uncalsample',nsim = 100,ncores = 3,verbose=FALSE)
+pp.check.m2=postPredSPD(obs.CRA,errors = obs.Errors,calCurve = 'intcal20',model = dLogisticGrowth,a = 7000,b=4500,params=list(r=mcmc.samples.m2$samples$chain1[,'r'],k=mcmc.samples.m2$samples$chain1[,'k']),method='uncalsample',nsim = 100,ncores = 3,verbose=FALSE)
 plot(pp.check.m2)
 ```
 
@@ -408,7 +408,7 @@ In this case, the posterior SPD shows a fairly decent fit, with a relatively hig
 ```{r posterior predictive correlation line plot, fig.width=8.4,fig.height=4.5}
 plot(obs.spd,spdnormalised = TRUE)
 highest.cor.index = which.max(postPredCor(pp.check.m2))
-lines(7500:4500,pp.check.m2$simmatrix[,highest.cor.index],lty=2)
+lines(7000:4500,pp.check.m2$simmatrix[,highest.cor.index],lty=2)
 legend('topleft',legend=c('observed SPD','Posterior Predictive SPD with the highest correlation'),col=c('lightgrey','black'),lwd=c(4,1),lty=c(1,2),bty='n')
 ```
 
@@ -460,7 +460,7 @@ postHPDplot(mcmc.samples[,'alpha[1]'],xlim=c(3900,3700),xlab='Cal BP',ylab='Post
 abline(v=b,lty=2)
 ```
 
-While the model is able to correctly recover the true parameter values, it should be noted that for general purposes dedicated software packages such as [BCal](https://bcal.shef.ac.uk/) and [OxCal](https://c14.arch.ox.ac.uk/oxcal.html) are recommended, as they provide automatic tuning of MCMC settings as well as  prior definitions and can they can easily encode more complex models with multiple phases and constraints. However, users interested in utilising custom probability distributions or more complex constraints that cannot be straightforwardly defined with these software packages might consider using _nimbleCarbon_. The package also provides a function for computing agreement indices (Bronk-Ramsey 1995) that are typically used in Bayesian phase analyses to determine model consistency. The function requires the observed CRA values and the posterior samples of each date obtained by `nimbleMCMC()`: 
+While the model is able to correctly recover the true parameter values, it should be noted that for general purposes dedicated software packages such as [BCal](https://bcal.shef.ac.uk/) and [OxCal](https://c14.arch.ox.ac.uk/oxcal.html) are recommended, as they provide automatic tuning of MCMC settings as well as prior definitions and can they can easily encode more complex models with multiple phases and constraints. However, users interested in utilising custom probability distributions or more complex constraints that cannot be straightforwardly defined with these software packages might consider using _nimbleCarbon_. The package also provides a function for computing agreement indices (Bronk-Ramsey 1995) that are typically used in Bayesian phase analyses to determine model consistency. The function requires the observed CRA values and the posterior samples of each date obtained by `nimbleMCMC()`: 
 
 ```{r agreement index nimbleCarbon}
 theta = mcmc.samples[,-c(1:2)] #Exclude columns containing the posterior samples other than those associated with each date 
@@ -469,7 +469,7 @@ head(a$agreement) #individual agreement indices
 a$overall.agreement #overall agreement index
 ```
 
-Although estimates provided by _nimbleCarbon_ are comparable to those computed by _OxCal_ (see additional example below) it is worth bearing in mind that estimates are computed from the posterior samples, and as such good convergence and  larger number of samples would provide more reliable estimates. 
+Although estimates provided by _nimbleCarbon_ are comparable to those computed by _OxCal_ (see additional example below) it is worth bearing in mind that estimates are computed from the posterior samples, and as such good convergence and larger number of samples would provide more reliable estimates. 
 
 ```{r agreement index oxcal, fig.width=5.5,fig.height=5.5}
 #the oxcAAR package provides an R interface for OxCal
@@ -564,5 +564,7 @@ Timpson, A., Barberena, R., Thomas, M. G., Méndez, C., & Manning, K. (2021). Di
 Timpson, A., Colledge, S., Crema, E., Edinborough, K., Kerig, T., Manning, K., et al. (2014). Reconstructing regional population fluctuations in the European Neolithic using radiocarbon dates: a new case-study using an improved method. Journal of Archaeological Science, 52, 549–557. https://doi.org/10.1016/j.jas.2014.08.011
 
 Watanabe, S. (2010). Asymptotic Equivalence of Bayes Cross Validation and Widely Applicable Information Criterion in Singular Learning Theory. The Journal of Machine Learning Research, 11, 3571–3594.
+
+Williams, A. N. (2012). The use of summed radiocarbon probability distributions in archaeology: a review of methods. Journal of Archaeological Science, 39, 578–589.
 
 Zahid, H. J., Robinson, E., & Kelly, R. L. (2016). Agriculture, population growth, and statistical analysis of the radiocarbon record. Proceedings of the National Academy of Sciences, 113(4), 931–935. https://doi.org/10.1073/pnas.1517650112
