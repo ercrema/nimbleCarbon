@@ -25,7 +25,7 @@ knitr::opts_chunk$set(fig.align = "center", eval = !is_check)
 
 # Introduction
 
-The _nimbleCarbon_ package provides a suite of custom functions and statistical distribution for using the NIMBLE framework to fit and compare population growth models based on temporal frequencies of radiocarbon dates (Rick 1987, Williams 2012, Crema and Bevan 2021, etc.). [NIMBLE](https://cran.r-project.org/package=nimble) is an R package that provides a system for writing Bayesian statistical models using an extensible dialect of the BUGS modelling language and a compiler that generates C++ programs for improved performance and customisation.  This document provides a short guide tailored to Bayesian radiocarbon analyses via _nimbleCarbon_. For a general introduction to the NIMBLE framework users are strongly advised to read tutorials and manuals which can be found on NIMBLE's [official website](https://r-nimble.org/). 
+The _nimbleCarbon_ package provides a suite of custom functions and statistical distribution for using the NIMBLE framework to fit and compare population growth models based on temporal frequencies of radiocarbon dates (Rick 1987, Williams 2012, Crema and Bevan 2021, etc.). [NIMBLE](https://cran.r-project.org/package=nimble) is an R package that provides a system for writing Bayesian statistical models using an extensible dialect of the BUGS modelling language and a compiler that generates C++ programs for improved performance and customisation.  This document provides a short guide tailored to Bayesian radiocarbon analyses via _nimbleCarbon_. For a general introduction to the NIMBLE framework users are strongly advised to read tutorials and manuals which can be found on NIMBLE's [official website](https://r-nimble.org/). For an extended discussion on theoretical principles behind the proposed Bayesian approach for analysing radiocarbon frequency data see Crema and Shoda 2021.
 
 ## Installing and loading the _nimbleCarbon_ package
 
@@ -546,6 +546,8 @@ Buck, C. E., Litton, C. D., & Smith, A. F. M. (1992). Calibration of radiocarbon
 Carleton, W. C., & Groucutt, H. S. (2021). Sum things are not what they seem: Problems with point-wise interpretations and quantitative analyses of proxies based on aggregated radiocarbon dates. The Holocene, 31(4), 630–643. https://doi.org/10.1177/0959683620981700
 
 Crema, E. R., & Bevan, A. (2021). Inference from large sets of radiocarbon dates: software and methods. Radiocarbon,63(1), 23-39. https://doi.org/10.1017/RDC.2020.95
+
+Crema, E. R., & Shoda, S. (2021). A Bayesian approach for fitting and comparing demographic growth models of radiocarbon dates: A case study on the Jomon-Yayoi transition in Kyushu (Japan). PLOS ONE, 16(5), e0251695. https://doi.org/10.1371/journal.pone.0251695
 
 Gelman, A., & Rubin, D. B. (1992). Inference from Iterative Simulation Using Multiple Sequences. Statistical Science, 7(4), 457–472. https://www.jstor.org/stable/2246093. Accessed 12 January 2021
 

@@ -9,3 +9,18 @@ citEntry(entry = "Manual",
     "nimbleCarbon v0.1.0: Models and Utility Functions for the Analysis of Radiocarbon Dates with 'nimble'",
     "URL https://github.com/ercrema/nimbleCarbon") 		
   )
+  
+citEntry(entry = "Article",
+    title = "A Bayesian approach for fitting and comparing demographic growth models of radiocarbon dates: a case study on the Jomon-Yayoi transition in Kyushu (Japan).",
+    author = personList(as.person("Enrico R. Crema"),as.person("Shinya Shoda")),
+    journal = "PloS ONE",
+    year = "2021",
+    volume       = "16",
+    number       = "5",
+    pages        = "e0251695",
+    url = "https://doi.org/10.1371/journal.pone.0251695",
+    textVersion =
+    paste("Crema, E.R., Shoda,  (2021)",
+    "A Bayesian approach for fitting and comparing demographic growth models of radiocarbon dates: a case study on the Jomon-Yayoi transition in Kyushu (Japan).",
+    "PloS ONE","16","5","e0251695","URL https://doi.org/10.1371/journal.pone.0251695")
+  )  
