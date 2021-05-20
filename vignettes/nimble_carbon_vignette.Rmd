@@ -42,6 +42,12 @@ Once the installation is completed, the package can be loaded using the `library
 library(nimbleCarbon)
 ```
 
+We will be also using the _rcarbon_ package for processing radiocarbon dates:
+
+```{r}
+library(rcarbon)
+```
+
 # Example 1: Exponential Growth Model
 
 To illustrate a typical work-flow for fitting population growth models with _nimbleCarbon_ we consider a hypothetical scenario where the target population grew with an exponential rate. More formally, we assume that the population size $N_t$ at time $t$ is given by the following equation:
@@ -549,7 +555,7 @@ Crema, E. R., & Bevan, A. (2021). Inference from large sets of radiocarbon dates
 
 Crema, E. R., & Shoda, S. (2021). A Bayesian approach for fitting and comparing demographic growth models of radiocarbon dates: A case study on the Jomon-Yayoi transition in Kyushu (Japan). PLOS ONE, 16(5), e0251695. https://doi.org/10.1371/journal.pone.0251695
 
-Gelman, A., & Rubin, D. B. (1992). Inference from Iterative Simulation Using Multiple Sequences. Statistical Science, 7(4), 457–472. https://www.jstor.org/stable/2246093. Accessed 12 January 2021
+Gelman, A., & Rubin, D. B. (1992). Inference from Iterative Simulation Using Multiple Sequences. Statistical Science, 7(4), 457–472
 
 Gelman, A., Hwang, J., & Vehtari, A. (2014). Understanding predictive information criteria for Bayesian models. Statistics and Computing, 24(6), 997–1016. https://doi.org/10.1007/s11222-013-9416-2
 
@@ -557,7 +563,7 @@ Manning, K., Colledge, S., Crema, E., Shennan, S., & Timpson, A. (2016). The Cul
 
 Reimer, P. J., Austin, W. E. N., Bard, E., Bayliss, A., Blackwell, P. G., Ramsey, C. B., et al. (2020). The IntCal20 Northern Hemisphere Radiocarbon Age Calibration Curve (0–55 cal kBP). Radiocarbon, 62(4), 725–757. https://doi.org/10.1017/RDC.2020.41
 
-Rick, J. W. (1987). Dates as Data: An Examination of the Peruvian Preceramic Radiocarbon Record. American Antiquity, 52(1), 55. https://doi.org/10.2307/281060
+Rick, J. W. (1987). Dates as Data: An Examination of the Peruvian Preceramic Radiocarbon Record. American Antiquity, 52(1), 55.
 
 Shennan, S., Downey, S. S., Timpson, A., Edinborough, K., Colledge, S., Kerig, T., et al. (2013). Regional population collapse followed initial agriculture booms in mid-Holocene Europe. Nature Communications, 4, ncomms3486. https://doi.org/10.1038/ncomms3486
 

@@ -3,9 +3,9 @@ Title: Models and Utility Functions for Bayesian Analyses of Radiocarbon Dates w
 Version: 0.1.0
 Authors@R: c(person("Enrico","Crema",role=c("aut","cre"),email=c("enrico.crema@gmail.com"),comment=c(ORCID="0000-0001-6727-5138")),person("Robert","Di Napoli",role=c("ctb"),email=c("dinapoli@binghamton.edu"),comment=c(ORCID="0000-0003-2180-2195")))
 Description: Provides utility functions and custom probability distribution for Bayesian analyses of radiocarbon dates within the 'nimble' modelling framework.  It includes various population growth models, nimbleFunction objects, as well as a suite of functions for prior and posterior predictive checks.  
-Depends: R (>= 3.5.0), nimble, rcarbon
+Depends: R (>= 3.5.0), nimble
+Imports: rcarbon,graphics,grDevices,utils,snow,doSNOW,foreach,coda
 Suggests: spelling, knitr, rmarkdown
-Imports: graphics,grDevices,utils,snow,doSNOW,foreach,iterators,coda
 License: GPL (>= 2)
 Encoding: UTF-8
 LazyData: true
