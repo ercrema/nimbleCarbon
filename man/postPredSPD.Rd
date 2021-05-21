@@ -21,31 +21,31 @@ postPredSPD(
 )
 }
 \arguments{
-\item{x}{A vector of observed uncalibrated radiocarbon ages.}
+\item{x}{a vector of observed uncalibrated radiocarbon ages.}
 
-\item{errors}{A vector of standard deviations corresponding to each estimated radiocarbon age.}
+\item{errors}{a vector of standard deviations corresponding to each estimated radiocarbon age.}
 
-\item{calCurve}{Character string naming a calibration curve already provided with the rcarbon package (currently 'intcal20','intcal13','intcal13nhpine16','shcal20','shcal13','shcal13shkauri16',''marine13','marine20').}
+\item{calCurve}{character string naming a calibration curve already provided with the rcarbon package (currently 'intcal20','intcal13','intcal13nhpine16','shcal20','shcal13','shcal13shkauri16',''marine13','marine20').}
 
-\item{model}{Growth Model}
+\item{model}{growth model}
 
 \item{a}{lower (earliest) limit of the distribution (in BP).}
 
 \item{b}{upper (latest) limit of the distribution (in BP).}
 
-\item{params}{List of vectors containing model parameters. The names attribute of each vector should match growth model parameters.}
+\item{params}{list of vectors containing model parameters. The names attribute of each vector should match growth model parameters.}
 
-\item{nsim}{Number of SPDs to be generated.  Default is the length of the parameter vectors supplied in the argument \code{params}.}
+\item{nsim}{number of SPDs to be generated.  Default is the length of the parameter vectors supplied in the argument \code{params}.}
 
-\item{method}{Method for the creation of random dates from the fitted model. Either 'uncalsample' or 'calsample'.}
+\item{method}{method for the creation of random dates from the fitted model. Either 'uncalsample' or 'calsample'.}
 
-\item{spdnormalised}{A logical variable indicating whether the total probability mass of the SPD is normalised to sum to unity for both observed and simulated data. Default is TRUE.}
+\item{spdnormalised}{a logical variable indicating whether the total probability mass of the SPD is normalised to sum to unity for both observed and simulated data. Default is TRUE.}
 
-\item{datenormalised}{A logical variable indicating whether dates should be normalised to sum to unity or not. Default is TRUE.}
+\item{datenormalised}{a logical variable indicating whether dates should be normalised to sum to unity or not. Default is TRUE.}
 
-\item{ncores}{Number of cores used for for parallel execution. Default is 1.}
+\item{ncores}{number of cores used for for parallel execution. Default is 1.}
 
-\item{verbose}{A logical variable indicating whether extra information on progress should be reported. Default is TRUE.}
+\item{verbose}{a logical variable indicating whether extra information on progress should be reported. Default is TRUE.}
 }
 \value{
 An object of class \code{spdppc} with the following elements

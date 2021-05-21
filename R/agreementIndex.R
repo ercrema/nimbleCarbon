@@ -1,11 +1,11 @@
-#' @title Calculate Agreement Index
+#' @title Calculate Agreement Indices.
 #' @description  Computes OxCal-style (Bronk-Ramsey 1995) individual and overall agreement index for evaluating model consistency.
-#' @param CRA Vector of C14 ages.
-#' @param CRAError Vector of C14 errors associated with \code{CRA}. 
-#' @param calCurve Character string naming a calibration curve, one between 'intcal20','intcal13','shcal20','shcal13','marine13' and 'marine20'. 
-#' @param theta A Matrix containing the posterior samples of each date. 
-#' @param verbose A logical variable indicating whether extra information on progress should be reported. Default is TRUE.
-#' @return A list containing the individual and overall agreement indices.
+#' @param CRA vector of C14 ages.
+#' @param CRAError vector of C14 errors associated with \code{CRA}. 
+#' @param calCurve character string naming a calibration curve, one between 'intcal20','intcal13','shcal20','shcal13','marine13' and 'marine20'. 
+#' @param theta a Matrix containing the posterior samples of each date. 
+#' @param verbose a logical variable indicating whether extra information on progress should be reported. Default is TRUE.
+#' @return a list containing the individual and overall agreement indices.
 #' @references Bronk-Ramsey, C. (1995). Radiocarbon Calibration and Analysis of Stratigraphy: The OxCal Program. Radiocarbon, 37(2), 425–430.
 #' @import rcarbon
 #' @export 

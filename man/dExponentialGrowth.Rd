@@ -22,6 +22,9 @@ rExponentialGrowth(n, a, b, r)
 
 \item{n}{number of random draws. Currently only n = 1 is supported, but the argument exists for standardization of "r" functions.}
 }
+\value{
+For \code{dExponentialGrowth}: the probability (or likelihood) or log probability of an observed date x (in Cal BP). For \code{rExponentialGrowth} a simulated date in Cal BP.
+}
 \description{
 Density and random generation of an exponential growth model distribution.
 }

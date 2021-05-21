@@ -1,7 +1,7 @@
 #' @title Plot SPD-based Posterior Predictive Check
 #'
-#' @description Plots spdppc' class object for SPD-based Posterior Predictive Check.
-#' @param x An 'spdppc' class object.
+#' @description Plots \code{spdppc} class object for SPD-based Posterior Predictive Check.
+#' @param x An \code{spdppc} class object.
 #' @param type Either a 'spaghetti' plot or a quantile based envelope plot. Default is 'envelope'.
 #' @param interval Quantile interval used for the envelope plot. Ignored when \code{type} is set to 'spaghetti'. Default is 0.90.
 #' @param nsample Number of samples to be displayed in the 'spaghetti' plot. Default is the total number of simulations supplied in the 'spdppc' class object, ignored when \code{type} is set to 'envelope'.
@@ -14,6 +14,7 @@
 #' @param negative.col Fill colour for the area with positive deviation from the simulation envelope.  Default is 'blue', ignored when \code{type} is set to 'spaghetti'.
 #' @param calendar  Either \code{'BP'} or \code{'BCAD'}. Indicate whether the calibrated date should be displayed in BP or BC/AD. Default is  \code{'BP'}.
 #' @param ... Additional arguments affecting the plot
+#' @return None.
 #' @method plot spdppc
 #' @export  
 

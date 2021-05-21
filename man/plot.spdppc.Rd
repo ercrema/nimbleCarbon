@@ -21,7 +21,7 @@
 )
 }
 \arguments{
-\item{x}{An 'spdppc' class object.}
+\item{x}{An \code{spdppc} class object.}
 
 \item{type}{Either a 'spaghetti' plot or a quantile based envelope plot. Default is 'envelope'.}
 
@@ -47,6 +47,9 @@
 
 \item{...}{Additional arguments affecting the plot}
 }
+\value{
+None.
+}
 \description{
-Plots spdppc' class object for SPD-based Posterior Predictive Check.
+Plots \code{spdppc} class object for SPD-based Posterior Predictive Check.
 }

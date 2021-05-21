@@ -3,19 +3,19 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c("i"))
 #' @title SPD-based Posterior Predictive Check
 #'
 #' @description Generates SPDs from posterior samples.
-#' @param x A vector of observed uncalibrated radiocarbon ages.
-#' @param errors A vector of standard deviations corresponding to each estimated radiocarbon age.
-#' @param calCurve Character string naming a calibration curve already provided with the rcarbon package (currently 'intcal20','intcal13','intcal13nhpine16','shcal20','shcal13','shcal13shkauri16',''marine13','marine20').
-#' @param model Growth Model
+#' @param x a vector of observed uncalibrated radiocarbon ages.
+#' @param errors a vector of standard deviations corresponding to each estimated radiocarbon age.
+#' @param calCurve character string naming a calibration curve already provided with the rcarbon package (currently 'intcal20','intcal13','intcal13nhpine16','shcal20','shcal13','shcal13shkauri16',''marine13','marine20').
+#' @param model growth model
 #' @param a lower (earliest) limit of the distribution (in BP).
 #' @param b upper (latest) limit of the distribution (in BP).
-#' @param params List of vectors containing model parameters. The names attribute of each vector should match growth model parameters.
-#' @param nsim Number of SPDs to be generated.  Default is the length of the parameter vectors supplied in the argument \code{params}.
-#' @param method Method for the creation of random dates from the fitted model. Either 'uncalsample' or 'calsample'.
-#' @param datenormalised A logical variable indicating whether dates should be normalised to sum to unity or not. Default is TRUE.
-#' @param spdnormalised A logical variable indicating whether the total probability mass of the SPD is normalised to sum to unity for both observed and simulated data. Default is TRUE.
-#' @param ncores Number of cores used for for parallel execution. Default is 1.
-#' @param verbose A logical variable indicating whether extra information on progress should be reported. Default is TRUE.
+#' @param params list of vectors containing model parameters. The names attribute of each vector should match growth model parameters.
+#' @param nsim number of SPDs to be generated.  Default is the length of the parameter vectors supplied in the argument \code{params}.
+#' @param method method for the creation of random dates from the fitted model. Either 'uncalsample' or 'calsample'.
+#' @param datenormalised a logical variable indicating whether dates should be normalised to sum to unity or not. Default is TRUE.
+#' @param spdnormalised a logical variable indicating whether the total probability mass of the SPD is normalised to sum to unity for both observed and simulated data. Default is TRUE.
+#' @param ncores number of cores used for for parallel execution. Default is 1.
+#' @param verbose a logical variable indicating whether extra information on progress should be reported. Default is TRUE.
 #' @return An object of class \code{spdppc} with the following elements
 #' \itemize{
 #' \item{\code{obs}} {A data.frame containing the years (in Cal BP) and the corresponding summed probability in the observed data.}

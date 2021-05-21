@@ -18,15 +18,18 @@ rExponentialLogisticGrowth(n, a, b, k, r1, r2, mu)
 
 \item{k}{initial proportion of the carrying capacity (must be between 0 and 1).}
 
-\item{r1}{growth rate of the exponential phase}
+\item{r1}{growth rate of the exponential phase.}
 
-\item{r2}{growth rate of logistic phase}
+\item{r2}{growth rate of logistic phase.}
 
 \item{mu}{change point (in BP).}
 
 \item{log}{TRUE or 1 to return log probability. FALSE or 0 to return probability.}
 
 \item{n}{number of random draws. Currently only n = 1 is supported, but the argument exists for standardization of "r" functions.}
+}
+\value{
+For \code{dExponentialLogisticGrowth}: the probability (or likelihood) or log probability of an observed date x (in Cal BP). For \code{rExponentialLogisticGrowth} a simulated date in Cal BP.
 }
 \description{
 Density and random generation of a exponential-logistic growth model distribution.

@@ -35,6 +35,9 @@ postHPDplot(
 
 \item{...}{other graphical parameters.}
 }
+\value{
+None.
+}
 \description{
 Plot marginal posterior distribution highlighting user-defined higher posterior density interval.
 }

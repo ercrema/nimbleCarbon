@@ -8,6 +8,7 @@
 #' @param r intrinsic growth rate.
 #' @param log TRUE or 1 to return log probability. FALSE or 0 to return probability.
 #' @param n number of random draws. Currently only n = 1 is supported, but the argument exists for standardization of "r" functions.
+#' @return For \code{dExponentialGrowth}: the probability (or likelihood) or log probability of an observed date x (in Cal BP). For \code{rExponentialGrowth} a simulated date in Cal BP. 
 #' @author Enrico Crema
 
 NULL

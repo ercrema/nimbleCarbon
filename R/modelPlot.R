@@ -1,23 +1,24 @@
 #' @title Plot Growth Models
 #'
-#' @description Plot growth models based on user provided parameters for prior and posterior predictive checks. 
-#' @param model Growth Model
+#' @description Plots growth models based on user provided parameters for prior and posterior predictive checks. 
+#' @param model growth model.
 #' @param a lower (earliest) limit of the distribution (in BP).
 #' @param b upper (latest) limit of the distribution (in BP).
-#' @param params List of vectors containing model parameters. The names attribute of each vector should match growth model parameters.
-#' @param type Either a 'spaghetti' plot or a quantile based 'envelope' plot. Default is 'spaghetti'.
-#' @param nsample Number of samples to be used. Default is the length of the parameter vectors supplied in the argument \code{params}.
-#' @param interval Quantile interval used for the envelope plot. Ignored when type is set to 'spaghetti'.
-#' @param calendar  Either \code{'BP'} or \code{'BCAD'}. Indicate whether the calibrated date should be displayed in BP or BC/AD. Default is  \code{'BP'}.
-#' @param col Fill color for the quantile envelope (when \code{type=='envelope'}) or line colour (when \code{type=='spaghetti'}).
-#' @param alpha Transparency value for each line in the spaghetti plot. Ignored when type is set to 'envelope'.
+#' @param params a \link{list} of vectors containing model parameters. The names attribute of each vector should match growth model parameters.
+#' @param type either a 'spaghetti' plot or a quantile based 'envelope' plot. Default is 'spaghetti'.
+#' @param nsample number of samples to be used. Default is the length of the parameter vectors supplied in the argument \code{params}.
+#' @param interval quantile interval used for the envelope plot. Ignored when type is set to 'spaghetti'.
+#' @param calendar  either \code{'BP'} or \code{'BCAD'}. Indicate whether the calibrated date should be displayed in BP or BC/AD. Default is  \code{'BP'}.
+#' @param col fill color for the quantile envelope (when \code{type=='envelope'}) or line colour (when \code{type=='spaghetti'}).
+#' @param alpha transparency value for each line in the spaghetti plot. Ignored when type is set to 'envelope'. Default is 0.1.
 #' @param ylim the y limits of the plot.
-#' @param add Whether or not the new graphic should be added to an existing plot. 
-#' @param ... Additional arguments affecting the plot
+#' @param add whether or not the new graphic should be added to an existing plot. 
+#' @param ... additional arguments affecting the plot
+#' @return None.
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' params = list(k=runif(100,0.01,0.02),r=runif(100,0.003,0.004))
-#' modelPlot(model=dLogisticGrowth,a=5000,b=2000,params=params,type=c('spaghetti'))
+#' modelPlot(model=dLogisticGrowth,a=5000,b=2000,params=params,type=c('spaghetti'),alpha=0.5)
 #' }
 #' @export 
 modelPlot = function(model,a,b,params,type=c('spaghetti'),nsample=NULL,interval=0.9,calendar='BP',col='lightgrey',alpha=0.1,ylim=NULL,add=FALSE,...)

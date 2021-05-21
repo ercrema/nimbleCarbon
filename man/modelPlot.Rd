@@ -21,38 +21,41 @@ modelPlot(
 )
 }
 \arguments{
-\item{model}{Growth Model}
+\item{model}{growth model.}
 
 \item{a}{lower (earliest) limit of the distribution (in BP).}
 
 \item{b}{upper (latest) limit of the distribution (in BP).}
 
-\item{params}{List of vectors containing model parameters. The names attribute of each vector should match growth model parameters.}
+\item{params}{a \link{list} of vectors containing model parameters. The names attribute of each vector should match growth model parameters.}
 
-\item{type}{Either a 'spaghetti' plot or a quantile based 'envelope' plot. Default is 'spaghetti'.}
+\item{type}{either a 'spaghetti' plot or a quantile based 'envelope' plot. Default is 'spaghetti'.}
 
-\item{nsample}{Number of samples to be used. Default is the length of the parameter vectors supplied in the argument \code{params}.}
+\item{nsample}{number of samples to be used. Default is the length of the parameter vectors supplied in the argument \code{params}.}
 
-\item{interval}{Quantile interval used for the envelope plot. Ignored when type is set to 'spaghetti'.}
+\item{interval}{quantile interval used for the envelope plot. Ignored when type is set to 'spaghetti'.}
 
-\item{calendar}{Either \code{'BP'} or \code{'BCAD'}. Indicate whether the calibrated date should be displayed in BP or BC/AD. Default is  \code{'BP'}.}
+\item{calendar}{either \code{'BP'} or \code{'BCAD'}. Indicate whether the calibrated date should be displayed in BP or BC/AD. Default is  \code{'BP'}.}
 
-\item{col}{Fill color for the quantile envelope (when \code{type=='envelope'}) or line colour (when \code{type=='spaghetti'}).}
+\item{col}{fill color for the quantile envelope (when \code{type=='envelope'}) or line colour (when \code{type=='spaghetti'}).}
 
-\item{alpha}{Transparency value for each line in the spaghetti plot. Ignored when type is set to 'envelope'.}
+\item{alpha}{transparency value for each line in the spaghetti plot. Ignored when type is set to 'envelope'. Default is 0.1.}
 
 \item{ylim}{the y limits of the plot.}
 
-\item{add}{Whether or not the new graphic should be added to an existing plot.}
+\item{add}{whether or not the new graphic should be added to an existing plot.}
 
-\item{...}{Additional arguments affecting the plot}
+\item{...}{additional arguments affecting the plot}
+}
+\value{
+None.
 }
 \description{
-Plot growth models based on user provided parameters for prior and posterior predictive checks.
+Plots growth models based on user provided parameters for prior and posterior predictive checks.
 }
 \examples{
-\dontrun{
+\donttest{
 params = list(k=runif(100,0.01,0.02),r=runif(100,0.003,0.004))
-modelPlot(model=dLogisticGrowth,a=5000,b=2000,params=params,type=c('spaghetti'))
+modelPlot(model=dLogisticGrowth,a=5000,b=2000,params=params,type=c('spaghetti'),alpha=0.5)
 }
 }

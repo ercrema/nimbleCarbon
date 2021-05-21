@@ -6,11 +6,12 @@
 #' @param a lower (earliest) limit of the distribution (in BP).
 #' @param b upper (latest) limit of the distribution (in BP).
 #' @param k initial proportion of the carrying capacity (must be between 0 and 1).
-#' @param r1 growth rate of the logistic phase
+#' @param r1 growth rate of the logistic phase.
 #' @param mu change point (in BP).
-#' @param r2 growth rate of exponential phase
+#' @param r2 growth rate of exponential phase.
 #' @param log TRUE or 1 to return log probability. FALSE or 0 to return probability.
 #' @param n number of random draws. Currently only n = 1 is supported, but the argument exists for standardization of "r" functions.
+#' @return For \code{dLogisticExponentialGrowth}: the probability (or likelihood) or log probability of an observed date x (in Cal BP). For \code{rLogisticExponentialGrowth} a simulated date in Cal BP. 
 #' @author Robert DiNapoli & Enrico Crema
 
 

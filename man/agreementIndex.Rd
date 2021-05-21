@@ -2,23 +2,23 @@
 % Please edit documentation in R/agreementIndex.R
 \name{agreementIndex}
 \alias{agreementIndex}
-\title{Calculate Agreement Index}
+\title{Calculate Agreement Indices.}
 \usage{
 agreementIndex(CRA, CRAError, calCurve = "intcal20", theta, verbose = TRUE)
 }
 \arguments{
-\item{CRA}{Vector of C14 ages.}
+\item{CRA}{vector of C14 ages.}
 
-\item{CRAError}{Vector of C14 errors associated with \code{CRA}.}
+\item{CRAError}{vector of C14 errors associated with \code{CRA}.}
 
-\item{calCurve}{Character string naming a calibration curve, one between 'intcal20','intcal13','shcal20','shcal13','marine13' and 'marine20'.}
+\item{calCurve}{character string naming a calibration curve, one between 'intcal20','intcal13','shcal20','shcal13','marine13' and 'marine20'.}
 
-\item{theta}{A Matrix containing the posterior samples of each date.}
+\item{theta}{a Matrix containing the posterior samples of each date.}
 
-\item{verbose}{A logical variable indicating whether extra information on progress should be reported. Default is TRUE.}
+\item{verbose}{a logical variable indicating whether extra information on progress should be reported. Default is TRUE.}
 }
 \value{
-A list containing the individual and overall agreement indices.
+a list containing the individual and overall agreement indices.
 }
 \description{
 Computes OxCal-style (Bronk-Ramsey 1995) individual and overall agreement index for evaluating model consistency.
