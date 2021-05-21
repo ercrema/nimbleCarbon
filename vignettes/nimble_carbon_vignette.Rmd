@@ -372,8 +372,8 @@ indicating that we can have reliable marginal posterior distributions:
 
 ```{r ex2 marginal posteriors,fig.width=9,fig.height=3.5}
 par(mfrow=c(1,3))
-postHPDplot(mcmc.samples.m1$samples$chain1[,'r'],rnd=5,xlab='r',ylab='Density',prob = 0.95,main='Model 1: r',xlim=c(0.00055,0.0032))
-postHPDplot(mcmc.samples.m2$samples$chain1[,'r'],rnd=5,xlab='r',ylab='Density',prob = 0.95,main='Model 2: r',xlim=c(0.00055,0.0032))
+postHPDplot(mcmc.samples.m1$samples$chain1[,'r'],rnd=5,xlab='r',ylab='Density',prob = 0.95,main='Model 1: r',xlim=c(0.00055,0.0055))
+postHPDplot(mcmc.samples.m2$samples$chain1[,'r'],rnd=5,xlab='r',ylab='Density',prob = 0.95,main='Model 2: r',xlim=c(0.00055,0.0055))
 postHPDplot(mcmc.samples.m2$samples$chain1[,'k'],rnd=5,xlab='k',ylab='Density',prob = 0.95,main='Model 2: k')
 ```
 
