@@ -1,3 +1,4 @@
+[![cran version](http://www.r-pkg.org/badges/version/rcarbon)](https://CRAN.R-project.org/package=nimbleCarbon) 
 # nimbleCarbon <img src="/logo/logo.png" align="right" />
 
 The _nimbleCarbon_ package provides utility functions and bespoke probability distributions for the Bayesian analyses of radiocarbon dates using the [NIMBLE](https://r-nimble.org/) framework. The package is particularly suited for demographic inferences based on changing frequencies of radiocarbon dates and enables parameter estimations and model comparison for the following population growth models (see Crema and Shoda 2021 for details):
