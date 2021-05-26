@@ -34,7 +34,4 @@
         pqAvail = FALSE
       )))  
   })
-  suppressMessages({
-    compileNimble(interpLin)
-  })
 }
