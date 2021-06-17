@@ -16,6 +16,7 @@ modelPlot(
   col = "lightgrey",
   alpha = 0.1,
   ylim = NULL,
+  xlim = NULL,
   add = FALSE,
   ...
 )
@@ -42,6 +43,8 @@ modelPlot(
 \item{alpha}{transparency value for each line in the spaghetti plot. Ignored when type is set to 'envelope'. Default is 0.1.}
 
 \item{ylim}{the y limits of the plot.}
+
+\item{xlim}{the x limits of the plot (in Cal BP).}
 
 \item{add}{whether or not the new graphic should be added to an existing plot.}
 
