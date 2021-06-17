@@ -12,6 +12,7 @@
 #' @param col fill color for the quantile envelope (when \code{type=='envelope'}) or line colour (when \code{type=='spaghetti'}).
 #' @param alpha transparency value for each line in the spaghetti plot. Ignored when type is set to 'envelope'. Default is 0.1.
 #' @param ylim the y limits of the plot.
+#' @param xlim the x limits of the plot (in Cal BP).
 #' @param add whether or not the new graphic should be added to an existing plot. 
 #' @param ... additional arguments affecting the plot
 #' @return None.
@@ -21,13 +22,24 @@
 #' modelPlot(model=dLogisticGrowth,a=5000,b=2000,params=params,type=c('spaghetti'),alpha=0.5)
 #' }
 #' @export 
-modelPlot = function(model,a,b,params,type=c('spaghetti'),nsample=NULL,interval=0.9,calendar='BP',col='lightgrey',alpha=0.1,ylim=NULL,add=FALSE,...)
+modelPlot = function(model,a,b,params,type=c('spaghetti'),nsample=NULL,interval=0.9,calendar='BP',col='lightgrey',alpha=0.1,ylim=NULL,xlim=NULL,add=FALSE,...)
 {
+  #Check provided model is supported
+  modelName <- as.character(substitute(model))
+  if (!modelName%in%c('dLogisticGrowth','dLogisticExponentialGrowth','dExponentialGrowth','dDoubleExponentialGrowth','dExponentialLogisticGrowth','dTrapezoidal'))
+  {
+    stop(paste0(modelName,' is currently not supported'))
+  }
+  
+  #If dTrapezoidal consider using alternative function
+  if (modelName=='dTrapezoidal')
+  {
+    model = dTrapezoidal_modelPlot
+  }
   #Check length parameters
   if (length(unique(unlist(lapply(params,length))))>1)
   {
-    print('Number of supplied sample parameters should be the same.')
-    stop()
+    stop('Number of supplied sample parameters should be the same.')
   }
   supplied.nsample = unique(unlist(lapply(params,length)))
   if (!is.null(nsample)){nsample.index=sample(supplied.nsample,size=nsample)}
@@ -39,17 +51,19 @@ modelPlot = function(model,a,b,params,type=c('spaghetti'),nsample=NULL,interval=
     mat[,i] = do.call(model,args=c(list(x=a:b,a=a,b=b),lapply(params,function(x,i){x[[i]]},i=nsample.index[i]),list(log=FALSE)))
   }
   
-  #Setting calendar
+  #Setting calendar and xlim
   if (calendar=="BP"){
     plotyears <- a:b
     xlabel <- "Years cal BP"
-    xlim <- c(max(plotyears),min(plotyears))
+    if (!is.null(xlim)){xlim=sort(xlim,T)}
+    if (is.null(xlim)){xlim <- c(max(plotyears),min(plotyears))}
   } else if (calendar=="BCAD"){
     plotyears <- BPtoBCAD(a:b)
     xlabel <- "Years BC/AD"
     if (all(range(plotyears)<0)){xlabel <- "Years BC"}
     if (all(range(plotyears)>0)){xlabel <- "Years AD"}
-    xlim <- c(min(plotyears),max(plotyears))
+    if (!is.null(xlim)){xlim=BPtoBCAD(sort(xlim,T))}
+    if (is.null(xlim)){xlim <- c(min(plotyears),max(plotyears))}
   } else {
     stop("Unknown calendar type")
   }
@@ -74,12 +88,12 @@ modelPlot = function(model,a,b,params,type=c('spaghetti'),nsample=NULL,interval=
   }
   
   if (calendar=="BP"){
-    rr <- range(pretty(plotyears))    
-    axis(side=1,at=seq(rr[2],rr[1],-100),labels=NA,tck = -.01)
-    axis(side=1,at=pretty(plotyears),labels=abs(pretty(plotyears)))
+    rr <- range(pretty(xlim))    
+    if(!add){axis(side=1,at=seq(rr[2],rr[1],-100),labels=NA,tck = -.01)
+      axis(side=1,at=pretty(xlim),labels=abs(pretty(xlim)))}
   } else if (calendar=="BCAD"){
-    yy <-  plotyears
-    rr <- range(pretty(yy))    
+    yy <-  xlim
+    rr <- range(pretty(xlim))    
     prettyTicks <- seq(rr[1],rr[2],+100)
     prettyTicks[which(prettyTicks>=0)] <-  prettyTicks[which(prettyTicks>=0)]-1
     axis(side=1,at=prettyTicks, labels=NA,tck = -.01)
@@ -87,6 +101,6 @@ modelPlot = function(model,a,b,params,type=c('spaghetti'),nsample=NULL,interval=
     pyShown <- py
     if (any(pyShown==0)){pyShown[which(pyShown==0)]=1}
     py[which(py>1)] <-  py[which(py>1)]-1
-    axis(side=1,at=py,labels=abs(pyShown))
+    if(!add){axis(side=1,at=py,labels=abs(pyShown))}
   }
 }

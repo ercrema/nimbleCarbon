@@ -1,5 +1,10 @@
+# Version 0.1.3
+* NEW: Added Trapezoidal distribution.
+* Updated version of `modelPlot()` function.
+
 # Version 0.1.2
 * Fixes an installation error affecting Oracle Solaris 10, x86, 32 bit, R release, Oracle Developer Studio 12.6 
+
 # Version 0.1.1
 First release including the following key features:
 * Custom population growth models (`dExponentialGrowth.R`, `dLogisticGrowth.R`,`dDoubleExponentialGrowth.R`, `dExponentialLogisticGrowth.R`, and `dLogisticExponentialGrowth.R`)
