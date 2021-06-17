@@ -32,6 +32,12 @@
         BUGSdist = "dLogisticExponentialGrowth(a,b,r1,r2,k,mu)",
         Rdist = "dLogisticExponentialGrowth(a,b,r1,r2,k,mu)",
         pqAvail = FALSE
-      )))  
+      )))
+	registerDistributions(list(
+	  dTrapezoidal= list(
+	    BUGSdist = "dTrapezoidal(a,b,m1,m2)",
+	    Rdist = "dTrapezoidal(a,b,m1,m2)",
+	    pqAvail = FALSE
+	  )))
   })
 }
