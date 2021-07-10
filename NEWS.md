@@ -1,10 +1,10 @@
-# Version 0.2.0
+# Version 0.2.0 (In development)
 * NEW Distributions:
   * Trapezoidal Distribution.
   * Asymmetric Laplace Distribution
 * Updated version of `modelPlot()` function.
 
-# Version 0.1.2
+# Version 0.1.2 (CRAN Version)
 * Fixes an installation error affecting Oracle Solaris 10, x86, 32 bit, R release, Oracle Developer Studio 12.6 
 
 # Version 0.1.1
