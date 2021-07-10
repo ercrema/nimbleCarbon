@@ -42,11 +42,11 @@ rAsymLaplace <- nimbleFunction(
     u = runif(1)
     if (u < tau)
     {
-      res =  mu + ((sigma * log(q/tau))/(1 - tau))
+      res =  mu + ((sigma * log(u/tau))/(1 - tau))
     }
     if (u >= tau)
     {
-      res =  mu - ((sigma * log((1 - q)/(1 - tau)))/tau)
+      res =  mu - ((sigma * log((1 - u)/(1 - tau)))/tau)
     }
     return(res)
   })
