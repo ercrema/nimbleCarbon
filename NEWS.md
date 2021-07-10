@@ -1,5 +1,7 @@
-# Version 0.1.3
-* NEW: Added Trapezoidal distribution.
+# Version 0.2.0
+* NEW Distributions:
+  * Trapezoidal Distribution.
+  * Asymmetric Laplace Distribution
 * Updated version of `modelPlot()` function.
 
 # Version 0.1.2
