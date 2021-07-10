@@ -39,5 +39,11 @@
 	    Rdist = "dTrapezoidal(a,b,m1,m2)",
 	    pqAvail = FALSE
 	  )))
+	registerDistributions(list(
+	  dAsymLaplace= list(
+	    BUGSdist = "dAsymLaplace(mu,sigma,tau)",
+	    Rdist = "dAsymLaplace(mu,sigma,tau)",
+	    pqAvail = FALSE
+	  )))
   })
 }
