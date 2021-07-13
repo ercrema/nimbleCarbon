@@ -39,3 +39,6 @@
 
 # R Environment Variables
 .Renviron
+
+# Mac Specific Files
+.DS_Store
