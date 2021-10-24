@@ -1,5 +1,6 @@
 [![cran version](http://www.r-pkg.org/badges/version/nimbleCarbon)](https://CRAN.R-project.org/package=nimbleCarbon) 
 [![development version](https://img.shields.io/badge/devel%20version-0.2.0-lightblue.svg)](https://github.com/ercrema/nimbleCarbon)
+[![rstudio mirror downloads](http://cranlogs.r-pkg.org/badges/grand-total/nimbleCarbon?color=82b4e8)](https://github.com/metacran/cranlogs.app)
 [![R-CMD-check](https://github.com/ercrema/nimbleCarbon/workflows/R-CMD-check/badge.svg)](https://github.com/ercrema/nimbleCarbon/actions)
 # nimbleCarbon <img src="/logo/logo.png" align="right" />
 
