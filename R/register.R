@@ -43,7 +43,7 @@
 	  dAsymLaplace= list(
 	    BUGSdist = "dAsymLaplace(mu,sigma,tau)",
 	    Rdist = "dAsymLaplace(mu,sigma,tau)",
-	    pqAvail = FALSE
+	    pqAvail = TRUE
 	  )))
   })
 }
