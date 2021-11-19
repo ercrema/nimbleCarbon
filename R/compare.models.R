@@ -12,7 +12,7 @@ compare.models = function(...)
   L = length(models)
   model.names <- match.call()
   model.names <- as.character(model.names)[2:(L + 1)]
-  waic=unlist(lapply(models,function(x){x$WAIC}))
+  waic=unlist(lapply(models,function(x){x$WAIC$WAIC}))
   if (is.null(waic)){stop("MCMC samples do not contain WAIC values. Rerun 'nimbleMCMC()' setting the 'WAIC' argument to TRUE.")}
   deltaWAIC = waic - min(waic)
   w = exp(-0.5*deltaWAIC)/sum(exp(-0.5*deltaWAIC))

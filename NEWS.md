@@ -1,8 +1,9 @@
-# Version 0.2.1 (In development)
+# Version 0.2.0 (In development)
 * NEW Distributions:
   * Trapezoidal Distribution.
   * Asymmetric Laplace Distribution
 * Updated version of `modelPlot()` function.
+* Fixed error in `compare.models()` following changes in WAIC storing after nimble version 0.12.x
 
 # Version 0.1.2 (CRAN Version)
 * Fixes an installation error affecting Oracle Solaris 10, x86, 32 bit, R release, Oracle Developer Studio 12.6 
