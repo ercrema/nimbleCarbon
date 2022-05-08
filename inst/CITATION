@@ -1,8 +1,8 @@
 citHeader("To cite nimbleCarbon in publications use:")
 citEntry(entry = "Manual",
-    title = "nimbleCarbon: Models and Utility Functions for Bayesian  Analyses of Radiocarbon Dates with NIMBLE",
+    title = "nimbleCarbon (v.0.2.1): Models and Utility Functions for Bayesian  Analyses of Radiocarbon Dates with NIMBLE",
     author = personList(as.person("Enrico R. Crema")),
-    year = "2021",
+    year = "2022",
     url = "https://github.com/ercrema/nimbleCarbon",
     textVersion =
     paste("Crema, E.R. (2021)",
