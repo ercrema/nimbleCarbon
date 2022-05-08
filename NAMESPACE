@@ -33,5 +33,5 @@ import(nimble)
 import(rcarbon)
 import(snow)
 import(utils)
-importFrom("stats", "density", "quantile","cor")
+importFrom("stats", "runif","density", "quantile","cor")
 
