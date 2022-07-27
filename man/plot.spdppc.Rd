@@ -17,6 +17,8 @@
   positive.col = "red",
   negative.col = "blue",
   calendar = "BP",
+  xlab = NULL,
+  ylab = NULL,
   ...
 )
 }
@@ -44,6 +46,10 @@
 \item{negative.col}{Fill colour for the area with positive deviation from the simulation envelope.  Default is 'blue', ignored when \code{type} is set to 'spaghetti'.}
 
 \item{calendar}{Either \code{'BP'} or \code{'BCAD'}. Indicate whether the calibrated date should be displayed in BP or BC/AD. Default is  \code{'BP'}.}
+
+\item{xlab}{a label for the x axis. Default is 'Years cal BP','Years BC/AD','Years BC', or 'Years AD' depending on data range and settings of \code{calendar}.}
+
+\item{ylab}{a label for the y axis. Default is 'Probability'.}
 
 \item{...}{Additional arguments affecting the plot}
 }

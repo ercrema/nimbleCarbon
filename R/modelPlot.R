@@ -13,6 +13,8 @@
 #' @param alpha transparency value for each line in the spaghetti plot. Ignored when type is set to 'envelope'. Default is 0.1.
 #' @param ylim the y limits of the plot.
 #' @param xlim the x limits of the plot (in Cal BP).
+#' @param xlab a label for the x axis. Default is 'Years cal BP','Years BC/AD','Years BC', or 'Years AD' depending on data range and settings of \code{calendar}.  
+#' @param ylab a label for the y axis. Default is 'Probability'.
 #' @param add whether or not the new graphic should be added to an existing plot. 
 #' @param ... additional arguments affecting the plot
 #' @return None.
@@ -22,11 +24,11 @@
 #' modelPlot(model=dLogisticGrowth,a=5000,b=2000,params=params,type=c('spaghetti'),alpha=0.5)
 #' }
 #' @export 
-modelPlot = function(model,a,b,params,type=c('spaghetti'),nsample=NULL,interval=0.9,calendar='BP',col='lightgrey',alpha=0.1,ylim=NULL,xlim=NULL,add=FALSE,...)
+modelPlot = function(model,a,b,params,type=c('spaghetti'),nsample=NULL,interval=0.9,calendar='BP',col='lightgrey',alpha=0.1,ylim=NULL,xlim=NULL,xlab=NULL,ylab=NULL,add=FALSE,...)
 {
   #Check provided model is supported
   modelName <- as.character(substitute(model))
-  if (!modelName%in%c('dLogisticGrowth','dLogisticExponentialGrowth','dExponentialGrowth','dDoubleExponentialGrowth','dExponentialLogisticGrowth','dTrapezoidal'))
+  if (!modelName%in%c('dLogisticGrowth','dLogisticGrowth2','dLogisticExponentialGrowth','dExponentialGrowth','dDoubleExponentialGrowth','dExponentialLogisticGrowth','dTrapezoidal'))
   {
     stop(paste0(modelName,' is currently not supported'))
   }
@@ -51,17 +53,26 @@ modelPlot = function(model,a,b,params,type=c('spaghetti'),nsample=NULL,interval=
     mat[,i] = do.call(model,args=c(list(x=a:b,a=a,b=b),lapply(params,function(x,i){x[[i]]},i=nsample.index[i]),list(log=FALSE)))
   }
   
+  #Setting y Label
+  ylabel  <- ifelse(is.null(ylab),"Probability",ylab)
+
   #Setting calendar and xlim
   if (calendar=="BP"){
     plotyears <- a:b
-    xlabel <- "Years cal BP"
+    xlabel <- ifelse(is.null(xlab),"Years cal BP",xlab)
     if (!is.null(xlim)){xlim=sort(xlim,T)}
     if (is.null(xlim)){xlim <- c(max(plotyears),min(plotyears))}
   } else if (calendar=="BCAD"){
     plotyears <- BPtoBCAD(a:b)
-    xlabel <- "Years BC/AD"
-    if (all(range(plotyears)<0)){xlabel <- "Years BC"}
-    if (all(range(plotyears)>0)){xlabel <- "Years AD"}
+    xlabel <- ifelse(is.null(xlab),"Years BC/AD",xlab)
+    if (all(range(plotyears)<0))
+	    {
+		    xlabel <- ifelse(is.null(xlab),"Years BC",xlab)
+	    }
+    if (all(range(plotyears)>0))
+	    {
+		    xlabel <- ifelse(is.null(xlab),"Years AD",xlab)
+	    }
     if (!is.null(xlim)){xlim=BPtoBCAD(sort(xlim,T))}
     if (is.null(xlim)){xlim <- c(min(plotyears),max(plotyears))}
   } else {
@@ -75,7 +86,7 @@ modelPlot = function(model,a,b,params,type=c('spaghetti'),nsample=NULL,interval=
     hi=apply(mat,1,quantile,prob=1-(1-interval)/2)
     median = apply(mat,1,median)
     if (is.null(ylim)){ylim=c(0,max(hi))}
-    if(!add){plot(plotyears, median, xlim=xlim, ylim=ylim, type="n", col="white", ylab='Probability', xlab=xlabel, xaxt="n",...)}
+    if(!add){plot(plotyears, median, xlim=xlim, ylim=ylim, type="n", col="white", ylab=ylabel, xlab=xlabel, xaxt="n",...)}
     polygon(c(plotyears,rev(plotyears)),c(lo,rev(hi)),col=col,border=NA)
     lines(plotyears, median,lwd=2)
   }

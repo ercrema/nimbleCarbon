@@ -12,13 +12,15 @@
 #' @param envelope.col Fill colour of the simulation envelope. Default is 'lightgrey', ignored when \code{type} is set to 'envelope.'spaghetti'.
 #' @param positive.col Fill colour for the area with positive deviation from the simulation envelope.  Default is 'red', ignored when \code{type} is set to 'spaghetti'.
 #' @param negative.col Fill colour for the area with positive deviation from the simulation envelope.  Default is 'blue', ignored when \code{type} is set to 'spaghetti'.
+#' @param xlab a label for the x axis. Default is 'Years cal BP','Years BC/AD','Years BC', or 'Years AD' depending on data range and settings of \code{calendar}.  
+#' @param ylab a label for the y axis. Default is 'Probability'.
 #' @param calendar  Either \code{'BP'} or \code{'BCAD'}. Indicate whether the calibrated date should be displayed in BP or BC/AD. Default is  \code{'BP'}.
 #' @param ... Additional arguments affecting the plot
 #' @return None.
 #' @method plot spdppc
 #' @export  
 
-plot.spdppc = function(x, type='envelope', nsample=NULL, interval=0.90, obs.lwd=1.5,obs.col='black',sim.col='lightgrey',alpha=1,envelope.col='lightgrey',positive.col='red',negative.col='blue',calendar='BP', ...)
+plot.spdppc = function(x, type='envelope', nsample=NULL, interval=0.90, obs.lwd=1.5,obs.col='black',sim.col='lightgrey',alpha=1,envelope.col='lightgrey',positive.col='red',negative.col='blue',calendar='BP', xlab=NULL, ylab=NULL, ...)
 {
   if (!type%in%c('spaghetti','envelope')) {stop("The argument 'type' should be either 'spaghetti' or 'envelope'.")}
   if (is.null(nsample)) {nsample = ncol(x$simmatrix)}
@@ -27,17 +29,28 @@ plot.spdppc = function(x, type='envelope', nsample=NULL, interval=0.90, obs.lwd=
     warning(paste0('nsample large than the number of posterior simulations. Running with nsample=',ncol(x$simmatrix)))
     nsample = ncol(x$simmatrix)
   }
-  
+  #Setting y Label
+  ylabel  <- ifelse(is.null(ylab),"Probability",ylab)
   #Setting calendar
   if (calendar=="BP"){
     plotyears <- x$obs$calBP
-    xlabel <- "Years cal BP"
+    xlabel <- ifelse(is.null(xlab),"Years cal BP",xlab)
+#     xlabel <- "Years cal BP"
     xlim <- c(max(plotyears),min(plotyears))
   } else if (calendar=="BCAD"){
     plotyears <- BPtoBCAD(x$obs$calBP)
-    xlabel <- "Years BC/AD"
-    if (all(range(plotyears)<0)){xlabel <- "Years BC"}
-    if (all(range(plotyears)>0)){xlabel <- "Years AD"}
+    xlabel <- ifelse(is.null(xlab),"Years BC/AD",xlab)
+#     xlabel <- "Years BC/AD"
+    if (all(range(plotyears)<0))
+	    {
+		    xlabel <- ifelse(is.null(xlab),"Years BC",xlab)
+# 		    xlabel <- "Years BC"
+	    }
+    if (all(range(plotyears)>0))
+	    {
+		    xlabel <- ifelse(is.null(xlab),"Years AD",xlab)
+# 		    xlabel <- "Years AD"
+	    }
     xlim <- c(min(plotyears),max(plotyears))
   } else {
     stop("Unknown calendar type")
@@ -111,7 +124,7 @@ plot.spdppc = function(x, type='envelope', nsample=NULL, interval=0.90, obs.lwd=
       }   
     }
     
-    plot(0, 0, xlim=xlim, ylim=ylim, type="n", col="white", ylab='Probability', xlab=xlabel, xaxt="n", ...)
+    plot(0, 0, xlim=xlim, ylim=ylim, type="n", col="white", ylab=ylabel, xlab=xlabel, xaxt="n", ...)
     
     polygon(c(plotyears,rev(plotyears)),c(lo,rev(hi)),col=envelope.col,border=NA)
     
