@@ -34,6 +34,9 @@ Density and random generation of a logistic growth model distribution.
 p = list(k=0.01,r=0.007)
 modelPlot(model = dLogisticGrowth,a=6000,b=4000,params=p,alpha = 1)
 }
+\seealso{
+\code{dLogisticGrowth2} for an alternative parametrisation.
+}
 \author{
 Enrico Crema
 }

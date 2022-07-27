@@ -10,6 +10,12 @@
         pqAvail = FALSE
       )))
     registerDistributions(list(
+      dLogisticGrowth2 = list(
+        BUGSdist = "dLogisticGrowth2(a,b,m,r)",
+        Rdist = "dLogisticGrowth2(a,b,m,r)",
+        pqAvail = FALSE
+      )))
+    registerDistributions(list(
       dExponentialGrowth = list(
         BUGSdist = "dExponentialGrowth(a,b,r)",
         Rdist = "dExponentialGrowth(a,b,r)",

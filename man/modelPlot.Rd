@@ -17,6 +17,8 @@ modelPlot(
   alpha = 0.1,
   ylim = NULL,
   xlim = NULL,
+  xlab = NULL,
+  ylab = NULL,
   add = FALSE,
   ...
 )
@@ -45,6 +47,10 @@ modelPlot(
 \item{ylim}{the y limits of the plot.}
 
 \item{xlim}{the x limits of the plot (in Cal BP).}
+
+\item{xlab}{a label for the x axis. Default is 'Years cal BP','Years BC/AD','Years BC', or 'Years AD' depending on data range and settings of \code{calendar}.}
+
+\item{ylab}{a label for the y axis. Default is 'Probability'.}
 
 \item{add}{whether or not the new graphic should be added to an existing plot.}
 
