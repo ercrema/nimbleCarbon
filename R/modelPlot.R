@@ -25,7 +25,7 @@
 #' modelPlot(model=dLogisticGrowth,a=5000,b=2000,params=params,type=c('spaghetti'),alpha=0.5)
 #' }
 #' @export 
-modelPlot = function(model,a,b,params,type=c('spaghetti'),nsample=NULL,interval=0.9,calendar='BP',col='lightgrey',alpha=0.1,ylim=NULL,xlim=NULL,xlab=NULL,ylab=NULL,add=FALSE,...)
+modelPlot = function(model,a,b,params,type=c('spaghetti'),nsample=NULL,interval=0.9,calendar='BP',col='lightgrey',alpha=0.1,ylim=NULL,xlim=NULL,xlab=NULL,ylab=NULL,add=FALSE,lwd=1,...)
 {
   #Check provided model is supported
   modelName <- as.character(substitute(model))
