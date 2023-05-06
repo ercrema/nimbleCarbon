@@ -42,7 +42,7 @@ modelPlot(
 
 \item{col}{fill color for the quantile envelope (when \code{type=='envelope'}) or line colour (when \code{type=='spaghetti'}).}
 
-\item{alpha}{transparency value for each line in the spaghetti plot. Ignored when type is set to 'envelope'. Default is 0.1.}
+\item{alpha}{transparency value for each line in the spaghetti plot or the fill color in the 'envelope' plot.  Default is 1.}
 
 \item{ylim}{the y limits of the plot.}
 
