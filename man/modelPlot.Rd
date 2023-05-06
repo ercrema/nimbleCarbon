@@ -55,6 +55,8 @@ modelPlot(
 \item{add}{whether or not the new graphic should be added to an existing plot.}
 
 \item{...}{additional arguments affecting the plot}
+
+\item{lwd}{line width. Default is 1.}
 }
 \value{
 None.

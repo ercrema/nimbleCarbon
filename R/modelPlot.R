@@ -11,6 +11,7 @@
 #' @param calendar  either \code{'BP'} or \code{'BCAD'}. Indicate whether the calibrated date should be displayed in BP or BC/AD. Default is  \code{'BP'}.
 #' @param col fill color for the quantile envelope (when \code{type=='envelope'}) or line colour (when \code{type=='spaghetti'}).
 #' @param alpha transparency value for each line in the spaghetti plot or the fill color in the 'envelope' plot.  Default is 1.
+#' @param lwd line width. Default is 1.
 #' @param ylim the y limits of the plot.
 #' @param xlim the x limits of the plot (in Cal BP).
 #' @param xlab a label for the x axis. Default is 'Years cal BP','Years BC/AD','Years BC', or 'Years AD' depending on data range and settings of \code{calendar}.  
@@ -89,7 +90,7 @@ modelPlot = function(model,a,b,params,type=c('spaghetti'),nsample=NULL,interval=
     if(!add){plot(plotyears, median, xlim=xlim, ylim=ylim, type="n", col="white", ylab=ylabel, xlab=xlabel, xaxt="n",...)}
     colplot  <- col2rgb(col)/255
     polygon(c(plotyears,rev(plotyears)),c(lo,rev(hi)),col=rgb(colplot[1],colplot[2],colplot[3],alpha),border=NA)
-    lines(plotyears, median,lwd=2)
+    lines(plotyears, median,lwd=lwd)
   }
   
   if (type=='spaghetti')
