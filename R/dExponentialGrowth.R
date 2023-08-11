@@ -23,7 +23,7 @@ dExponentialGrowth=nimbleFunction(
   run = function(x = integer(0),a=double(0),b=double(0),r=double(0), log = integer(0)) {
     returnType(double(0))
     t = 1:(abs(b-a)+1)
-    n = numeric(abs(b-a))
+    n = numeric(abs(b-a)+1)
     tfinal = abs(b-a)+1
     for (i in 1:tfinal)
     {
