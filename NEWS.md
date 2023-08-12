@@ -1,5 +1,8 @@
 # Version 0.2.2 (In development)
-* Fixed bug in `dExponentialGrowth` causing memory allocation problems 
+* Fixed bug in `dExponentialGrowth()` causing memory allocation problems.
+* Added alternative parametrisation for logistic growth model (`dLogisticGrowth2()`)
+* Updated plot functions to allow user defined x and y labels.
+* Added option to specify line width in `modelPlot()`  
 
 # Version 0.2.1 (CRAN Version)
 * NEW Distributions:
