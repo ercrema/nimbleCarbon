@@ -1,4 +1,4 @@
-# Version 0.2.2 (In development)
+# Version 0.2.4 (Current GitHub Version)
 * Fixed bug in `dExponentialGrowth()` causing memory allocation problems.
 * Added alternative parametrisation for logistic growth model (`dLogisticGrowth2()`)
 * Updated plot functions to allow user defined x and y labels.
