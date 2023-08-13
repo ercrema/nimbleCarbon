@@ -20,6 +20,7 @@ modelPlot(
   xlab = NULL,
   ylab = NULL,
   add = FALSE,
+  lwd = 1,
   ...
 )
 }
@@ -54,9 +55,9 @@ modelPlot(
 
 \item{add}{whether or not the new graphic should be added to an existing plot.}
 
-\item{...}{additional arguments affecting the plot}
-
 \item{lwd}{line width. Default is 1.}
+
+\item{...}{additional arguments affecting the plot}
 }
 \value{
 None.
