@@ -37,7 +37,7 @@ dLogisticGrowth2=nimbleFunction(
     }
   })   
 
-#' @rdname dLogisticGrowth
+#' @rdname dLogisticGrowth2
 #' @export
 rLogisticGrowth2 = nimbleFunction(
   run = function(n=integer(0),a=double(0),b=double(0),m=double(0),r=double(0)) {

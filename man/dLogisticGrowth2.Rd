@@ -6,6 +6,8 @@
 \title{Logistic Growth Model (parametrisation with inflection point)}
 \usage{
 dLogisticGrowth2(x, a, b, m, r, log)
+
+rLogisticGrowth2(n, a, b, m, r)
 }
 \arguments{
 \item{x}{vector of calendar years (in BP).}
