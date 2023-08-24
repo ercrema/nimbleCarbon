@@ -18,7 +18,7 @@ c(
 			url = "https://doi.org/10.1371/journal.pone.0251695",
 			doi      = "10.1371/journal.pone.0251695",
 			header   = "If you use growth models for paleodemographic inference based on 14C dates, please also cite:"
-			),
+			)
 		)
 
 

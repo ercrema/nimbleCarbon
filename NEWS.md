@@ -1,10 +1,10 @@
-# Version 0.2.5 (Current GitHub Version)
+# Version 0.2.5 (CRAN Version)
 * Fixed bug in `dExponentialGrowth()` causing memory allocation problems.
 * Added alternative parametrisation for logistic growth model (`dLogisticGrowth2()`)
 * Updated plot functions to allow user defined x and y labels.
 * Added option to specify line width in `modelPlot()`  
 
-# Version 0.2.1 (CRAN Version)
+# Version 0.2.1
 * NEW Distributions:
   * Trapezoidal Distribution.
   * Asymmetric Laplace Distribution
