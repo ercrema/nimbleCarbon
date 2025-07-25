@@ -1,7 +1,7 @@
 #' @title WAIC-based model comparison
 #'
 #' @description  Compute delta WAIC and WAIC weights for model comparison.
-#' @param ... MCMC output from either \code{\link{nimbleMCMC}} or \code{\link{runMCMC}} functions in the \code{nimble} R package. Note that in argument \code{WAIC} should be set to TRUE.
+#' @param ... MCMC output from either \code{\link[nimble]{nimbleMCMC}} or \code{\link[nimble]{runMCMC}} functions in the \code{nimble} R package. Note that in argument \code{WAIC} should be set to TRUE.
 #' @return A table containing WAIC, delta WAIC, and WAIC weights.
 #' @export 
 

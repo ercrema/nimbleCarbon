@@ -7,7 +7,7 @@
 compare.models(...)
 }
 \arguments{
-\item{...}{MCMC output from either \code{\link{nimbleMCMC}} or \code{\link{runMCMC}} functions in the \code{nimble} R package. Note that in argument \code{WAIC} should be set to TRUE.}
+\item{...}{MCMC output from either \code{\link[nimble]{nimbleMCMC}} or \code{\link[nimble]{runMCMC}} functions in the \code{nimble} R package. Note that in argument \code{WAIC} should be set to TRUE.}
 }
 \value{
 A table containing WAIC, delta WAIC, and WAIC weights.

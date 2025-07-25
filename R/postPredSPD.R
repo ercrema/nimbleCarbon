@@ -18,8 +18,8 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c("i"))
 #' @param verbose a logical variable indicating whether extra information on progress should be reported. Default is TRUE.
 #' @return An object of class \code{spdppc} with the following elements
 #' \itemize{
-#' \item{\code{obs}} {A data.frame containing the years (in Cal BP) and the corresponding summed probability in the observed data.}
-#' \item{\code{spdmat}} {A matrix containing the summed probability distribution of the simulated data.}
+#' \item \code{obs} A data.frame containing the years (in Cal BP) and the corresponding summed probability in the observed data.
+#' \item \code{spdmat} A matrix containing the summed probability distribution of the simulated data.
 #' }
 #' @import grDevices
 #' @import graphics
